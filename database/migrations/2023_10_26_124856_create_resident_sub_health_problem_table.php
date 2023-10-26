@@ -13,7 +13,6 @@ return new class extends Migration {
             $table->id();
             $table->foreignIdFor(Resident::class, 'resident_id')->constrained('residents', 'id');
             $table->foreignIdFor(SubHealthProblem::class, 'sub_health_problem_id')->constrained('sub_health_problems', 'id');
-            $table->timestamps();
         });
     }
 

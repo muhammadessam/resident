@@ -3,11 +3,14 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\FemaleResidentResource\Pages;
+use App\Filament\Resources\FemaleResidentResource\RelationManagers\HealthProblemsRelationManager;
 use App\Models\Resident;
+use App\Models\SubHealthProblem;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -41,7 +44,9 @@ class FemaleResidentResource extends Resource
         return $form->schema([
             TextInput::make('name')->label('الاسم')->required(),
 
-            TextInput::make('number')->label('رقم المستفيد')->required()->unique('residents', 'number'),
+            TextInput::make('number')->label('رقم المستفيد')
+                ->required()
+                ->unique('residents', 'number', ignoreRecord: true),
 
             DatePicker::make('dob')->label('تاريخ الميلاد')->required(),
 
@@ -55,11 +60,28 @@ class FemaleResidentResource extends Resource
                 ->required(),
 
 
-            Textarea::make('external_visit_authorized')->label('المصرح لهم بالزياة الخارجية')->required(),
+            Textarea::make('external_visit_authorized')->label('المصرح لهم بالزياة الخارجية'),
 
-            Textarea::make('internal_visit_authorized')->label('المصرح لهم بالزيارة الداخلية')->required(),
+            Textarea::make('internal_visit_authorized')->label('المصرح لهم بالزيارة الداخلية'),
 
-            Textarea::make('notes')->label('ملاحظات')->columnSpan(2)->required(),
+            Textarea::make('notes')->label('ملاحظات'),
+
+            Select::make('healthProblems')
+                ->label('المشاكل الصحية')
+                ->required()
+                ->multiple()
+                ->preload(true)
+                ->relationship('healthProblems', 'name'),
+
+            SpatieMediaLibraryFileUpload::make('visit_allow_report')
+                ->collection('visit_allow_report')
+                ->label('استمارة تصريح الزيارة'),
+
+            SpatieMediaLibraryFileUpload::make('uploads')
+                ->collection('uploads')
+                ->multiple()
+                ->label('مرفقات اخري'),
+
 
             Checkbox::make('ability_to_external_visit')->label('القدرية علي الزيارة الخارجية'),
         ]);
@@ -102,6 +124,11 @@ class FemaleResidentResource extends Resource
             'edit' => Pages\EditFemaleResident::route('/{record}/edit'),
         ];
     }
+
+//    public static function getRelations(): array
+//    {
+//        return [HealthProblemsRelationManager::class];
+//    }
 
     public static function getGloballySearchableAttributes(): array
     {

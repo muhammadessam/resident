@@ -6,10 +6,14 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Resident extends Model
+class Resident extends Model implements HasMedia
 {
     use SoftDeletes;
+    use InteractsWithMedia;
+
 
     const METALDEGREE = [
         'simple' => 'اعاقة بسيط',
@@ -21,6 +25,7 @@ class Resident extends Model
     protected $fillable = [
         'name',
         'number',
+        'type',
         'dob',
         'doe',
         'building',
@@ -36,6 +41,12 @@ class Resident extends Model
         'doe' => 'date',
     ];
 
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('visit_allow_report')->singleFile()->useDisk('visit_allow_report');
+        $this->addMediaCollection('uploads')->useDisk('uploads');
+    }
 
     public function scopeMale(Builder $builder): Builder
     {

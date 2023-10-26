@@ -9,6 +9,17 @@ class CreateFemaleResident extends CreateRecord
 {
     protected static string $resource = FemaleResidentResource::class;
 
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['type'] = 'female';
+        return $data;
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+
     protected function getActions(): array
     {
         return [
