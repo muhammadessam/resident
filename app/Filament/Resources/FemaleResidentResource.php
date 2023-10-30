@@ -3,12 +3,10 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\FemaleResidentResource\Pages;
-use App\Filament\Resources\FemaleResidentResource\RelationManagers\HealthProblemsRelationManager;
+use App\Filament\Resources\FemaleResidentResource\RelationManagers\ResidentRelativesFemaleRelationManager;
 use App\Models\Resident;
-use App\Models\SubHealthProblem;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
@@ -115,6 +113,13 @@ class FemaleResidentResource extends Resource
             'create' => Pages\CreateFemaleResident::route('/create'),
             'view' => Pages\ViewFemaleResident::route('/{record}'),
             'edit' => Pages\EditFemaleResident::route('/{record}/edit'),
+        ];
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            ResidentRelativesFemaleRelationManager::class
         ];
     }
 

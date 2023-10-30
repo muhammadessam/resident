@@ -3,7 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\MaleResidentResource\Pages;
-use App\Filament\Resources\MaleResidentResource\RelationManagers\ResidentRelativesRelationManager;
+use App\Filament\Resources\MaleResidentResource\RelationManagers\ResidentRelativesMaleRelationManager;
 use App\Models\Resident;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
@@ -107,7 +107,7 @@ class MaleResidentResource extends Resource
     public static function getRelations(): array
     {
         return [
-            ResidentRelativesRelationManager::class,
+            ResidentRelativesMaleRelationManager::class,
         ];
     }
 
