@@ -3,17 +3,17 @@
 namespace App\Filament\Resources\MaleResidentResource\Pages;
 
 use App\Filament\Resources\MaleResidentResource;
-use Filament\Actions\DeleteAction;
-use Filament\Resources\Pages\EditRecord;
+use Filament\Actions\CreateAction;
+use Filament\Resources\Pages\ListRecords;
 
-class EditResident extends EditRecord
+class ListMaleResidents extends ListRecords
 {
     protected static string $resource = MaleResidentResource::class;
 
     protected function getActions(): array
     {
         return [
-            DeleteAction::make(),
+            CreateAction::make(),
         ];
     }
 }

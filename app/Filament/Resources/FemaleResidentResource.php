@@ -15,6 +15,9 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -90,29 +93,18 @@ class FemaleResidentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table->columns([
-            TextColumn::make('name')
-                ->searchable()
-                ->sortable(),
+            TextColumn::make('id')->label('#')->sortable(),
 
-            TextColumn::make('number'),
+            TextColumn::make('number')->label('رقم المستفيد')->sortable(),
 
-            TextColumn::make('dob')
-                ->date(),
+            TextColumn::make('name')->label('الاسم')->searchable()->sortable(),
 
-            TextColumn::make('doe')
-                ->date(),
+            TextColumn::make('age')->label('العمر'),
 
-            TextColumn::make('building'),
+            TextColumn::make('building')->label('المبني'),
 
-            TextColumn::make('ability_to_external_visit'),
-
-            TextColumn::make('external_visit_authorized'),
-
-            TextColumn::make('internal_visit_authorized'),
-
-            TextColumn::make('notes'),
-
-            TextColumn::make('mental_disability_degree'),
+        ])->actions([
+            ViewAction::make(), EditAction::make(), DeleteAction::make()
         ]);
     }
 
@@ -121,14 +113,10 @@ class FemaleResidentResource extends Resource
         return [
             'index' => Pages\ListFemaleResidents::route('/'),
             'create' => Pages\CreateFemaleResident::route('/create'),
+            'view' => Pages\ViewFemaleResident::route('/{record}'),
             'edit' => Pages\EditFemaleResident::route('/{record}/edit'),
         ];
     }
-
-//    public static function getRelations(): array
-//    {
-//        return [HealthProblemsRelationManager::class];
-//    }
 
     public static function getGloballySearchableAttributes(): array
     {

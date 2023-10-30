@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -58,8 +60,20 @@ class Resident extends Model implements HasMedia
         return $builder->where('type', 'female');
     }
 
+    public function age(): Attribute
+    {
+        return Attribute::make(get: fn() => Carbon::parse($this->dob)->age);
+    }
+
     public function healthProblems(): BelongsToMany
     {
         return $this->belongsToMany(SubHealthProblem::class);
+    }
+
+    public function residentRelatives(): BelongsToMany
+    {
+        return $this->belongsToMany(Resident::class, 'resident_relative', 'resident_id', 'relative_id')
+            ->using(ResidentRelative::class)
+            ->withTimestamps();
     }
 }

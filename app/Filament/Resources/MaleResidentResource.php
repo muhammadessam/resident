@@ -3,13 +3,20 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\MaleResidentResource\Pages;
+use App\Filament\Resources\MaleResidentResource\RelationManagers\ResidentRelativesRelationManager;
 use App\Models\Resident;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -37,74 +44,70 @@ class MaleResidentResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            TextInput::make('name')
-                ->required(),
+            TextInput::make('name')->label('الاسم')->required(),
 
-            DatePicker::make('dob'),
+            TextInput::make('number')->label('رقم المستفيد')->required()->unique('residents', 'number', ignoreRecord: true),
 
-            DatePicker::make('doe'),
+            DatePicker::make('dob')->label('تاريخ الميلاد')->required(),
 
-            TextInput::make('building')
-                ->required(),
+            DatePicker::make('doe')->label('تاريخ الدخول')->required(),
 
-            Checkbox::make('ability_to_extrn_visit'),
+            TextInput::make('building')->label('المبني')->required(),
 
-            TextInput::make('extrn_visit_authorized')
-                ->required(),
+            Select::make('mental_disability_degree')->label('درجة الاعاقة')->options(Resident::METALDEGREE)->required(),
 
-            TextInput::make('intrn_visit_authorized')
-                ->required(),
+            Textarea::make('external_visit_authorized')->label('المصرح لهم بالزياة الخارجية'),
 
-            TextInput::make('notes')
-                ->required(),
+            Textarea::make('internal_visit_authorized')->label('المصرح لهم بالزيارة الداخلية'),
 
-            TextInput::make('mental_disability_degree')
-                ->required()
-                ->integer(),
+            Textarea::make('notes')->label('ملاحظات'),
 
-            Placeholder::make('created_at')
-                ->label('Created Date')
-                ->content(fn(?Resident $record): string => $record?->created_at?->diffForHumans() ?? '-'),
+            Select::make('healthProblems')->label('المشاكل الصحية')->required()->multiple()->preload(true)->relationship('healthProblems', 'name'),
 
-            Placeholder::make('updated_at')
-                ->label('Last Modified Date')
-                ->content(fn(?Resident $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
+            SpatieMediaLibraryFileUpload::make('visit_allow_report')->collection('visit_allow_report')->label('استمارة تصريح الزيارة'),
+
+            SpatieMediaLibraryFileUpload::make('uploads')->collection('uploads')->multiple()->label('مرفقات اخري'),
+
+            Checkbox::make('ability_to_external_visit')->label('القدرية علي الزيارة الخارجية'),
         ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table->columns([
-            TextColumn::make('name')
-                ->searchable()
-                ->sortable(),
+            TextColumn::make('id')->label('#')->sortable(),
 
-            TextColumn::make('dob')
-                ->date(),
+            TextColumn::make('number')->label('رقم المستفيد')->sortable(),
 
-            TextColumn::make('doe')
-                ->date(),
+            TextColumn::make('name')->label('الاسم')->searchable()->sortable(),
 
-            TextColumn::make('building'),
+            TextColumn::make('age')->label('العمر')->sortable(['dob']),
 
-            TextColumn::make('ability_to_extrn_visit'),
+            TextColumn::make('building')->label('المبني'),
 
-            TextColumn::make('extrn_visit_authorized'),
+        ])->actions([
+            ViewAction::make(),
+            EditAction::make(),
+            DeleteAction::make()
+        ])->filters([
 
-            TextColumn::make('intrn_visit_authorized'),
-
-            TextColumn::make('notes'),
-
-            TextColumn::make('mental_disability_degree'),
         ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListResidents::route('/'),
-            'create' => Pages\CreateResident::route('/create'),
-            'edit' => Pages\EditResident::route('/{record}/edit'),
+            'index' => Pages\ListMaleResidents::route('/'),
+            'create' => Pages\CreateMaleResident::route('/create'),
+            'view' => Pages\ViewMaleResident::route('/{record}'),
+            'edit' => Pages\EditMaleResident::route('/{record}/edit'),
+        ];
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            ResidentRelativesRelationManager::class,
         ];
     }
 
