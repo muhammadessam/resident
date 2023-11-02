@@ -104,12 +104,7 @@ class MaleResidentResource extends Resource
         ];
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            ResidentRelativesMaleRelationManager::class,
-        ];
-    }
+
 
     public static function getGloballySearchableAttributes(): array
     {

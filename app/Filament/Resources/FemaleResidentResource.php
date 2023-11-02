@@ -116,12 +116,6 @@ class FemaleResidentResource extends Resource
         ];
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            ResidentRelativesFemaleRelationManager::class
-        ];
-    }
 
     public static function getGloballySearchableAttributes(): array
     {

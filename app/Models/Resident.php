@@ -70,10 +70,9 @@ class Resident extends Model implements HasMedia
         return $this->belongsToMany(SubHealthProblem::class);
     }
 
-    public function residentRelatives(): BelongsToMany
+    public function residentialRelatives(): BelongsToMany
     {
-        return $this->belongsToMany(Resident::class, 'resident_relative', 'resident_id', 'relative_id')
-            ->using(ResidentRelative::class)
+        return $this->belongsToMany(Resident::class, 'resident_resident', 'resident_id', 'relative_id')
             ->withTimestamps();
     }
 }
