@@ -23,6 +23,7 @@ class RelativeResource extends Resource
     protected static ?string $recordTitleAttribute = 'name';
     protected static ?string $label = 'قريب';
     protected static ?string $pluralLabel = 'الاقارب';
+    protected static ?string $navigationIcon = 'heroicon-o-users';
 
     public static function form(Form $form): Form
     {

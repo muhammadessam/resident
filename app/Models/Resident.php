@@ -80,4 +80,11 @@ class Resident extends Model implements HasMedia
         return $this->belongsToMany(Resident::class, 'resident_resident', 'relative_id', 'relative_id');
     }
 
+
+    public function relatives(): BelongsToMany
+    {
+        return $this->belongsToMany(Relative::class, 'relative_resident')
+            ->withTimestamps()
+            ->using(RelativeResident::class)->withPivot('relation', 'is_guardian');
+    }
 }

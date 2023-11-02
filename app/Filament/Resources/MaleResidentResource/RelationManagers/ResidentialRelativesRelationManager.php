@@ -15,7 +15,7 @@ class ResidentialRelativesRelationManager extends RelationManager
     protected static string $relationship = 'residentialRelatives';
     protected static ?string $inverseRelationship = 'relativesResidential';
     protected bool $allowsDuplicates = false;
-
+    protected static ?string $title = 'الربط مع المقيمين داخل المنشاة';
     public function isReadOnly(): bool
     {
         return false;

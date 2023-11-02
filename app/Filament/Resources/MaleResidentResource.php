@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\MaleResidentResource\Pages;
+use App\Filament\Resources\MaleResidentResource\RelationManagers\RelativesRelationManager;
 use App\Filament\Resources\MaleResidentResource\RelationManagers\ResidentialRelativesRelationManager;
 use App\Models\Resident;
 use Filament\Forms\Components\Checkbox;
@@ -107,6 +108,7 @@ class MaleResidentResource extends Resource
     {
         return [
             ResidentialRelativesRelationManager::class,
+            RelativesRelationManager::class,
         ];
     }
 
