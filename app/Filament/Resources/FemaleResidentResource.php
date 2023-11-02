@@ -3,7 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\FemaleResidentResource\Pages;
-use App\Filament\Resources\FemaleResidentResource\RelationManagers\ResidentRelativesFemaleRelationManager;
+use App\Filament\Resources\FemaleResidentResource\RelationManagers\ResidentialRelativesRelationManager;
 use App\Models\Resident;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
@@ -92,15 +92,10 @@ class FemaleResidentResource extends Resource
     {
         return $table->columns([
             TextColumn::make('id')->label('#')->sortable(),
-
             TextColumn::make('number')->label('رقم المستفيد')->sortable(),
-
             TextColumn::make('name')->label('الاسم')->searchable()->sortable(),
-
             TextColumn::make('age')->label('العمر'),
-
             TextColumn::make('building')->label('المبني'),
-
         ])->actions([
             ViewAction::make(), EditAction::make(), DeleteAction::make()
         ]);
@@ -116,6 +111,12 @@ class FemaleResidentResource extends Resource
         ];
     }
 
+    public static function getRelations(): array
+    {
+        return [
+            ResidentialRelativesRelationManager::class,
+        ];
+    }
 
     public static function getGloballySearchableAttributes(): array
     {

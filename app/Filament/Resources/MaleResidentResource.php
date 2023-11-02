@@ -3,11 +3,10 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\MaleResidentResource\Pages;
-use App\Filament\Resources\MaleResidentResource\RelationManagers\ResidentRelativesMaleRelationManager;
+use App\Filament\Resources\MaleResidentResource\RelationManagers\ResidentialRelativesRelationManager;
 use App\Models\Resident;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
@@ -104,7 +103,12 @@ class MaleResidentResource extends Resource
         ];
     }
 
-
+    public static function getRelations(): array
+    {
+        return [
+            ResidentialRelativesRelationManager::class,
+        ];
+    }
 
     public static function getGloballySearchableAttributes(): array
     {

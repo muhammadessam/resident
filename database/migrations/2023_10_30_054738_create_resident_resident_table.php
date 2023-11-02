@@ -9,12 +9,8 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('resident_resident', function (Blueprint $table) {
-            $table->id();
-
             $table->foreignIdFor(Resident::class, 'resident_id')->constrained('residents', 'id')->cascadeOnDelete();
             $table->foreignIdFor(Resident::class, 'relative_id')->constrained('residents', 'id')->cascadeOnDelete();
-
-            $table->timestamps();
         });
     }
 
