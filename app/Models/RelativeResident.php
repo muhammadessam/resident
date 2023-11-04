@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class RelativeResident extends Pivot
@@ -16,9 +17,11 @@ class RelativeResident extends Pivot
         'uncle' => 'عم',
         'aunt' => 'عمة',
         'grand' => 'جد',
+        'other' => 'غير ذلك'
     ];
     public $timestamps = true;
     protected $primaryKey = 'id';
     protected $fillable = ['id', 'resident_id', 'relative_id', 'relation', 'is_guardian', 'updated_at', 'created_at'];
+
 
 }
