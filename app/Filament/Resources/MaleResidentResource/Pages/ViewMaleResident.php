@@ -18,15 +18,15 @@ class ViewMaleResident extends ViewRecord
     {
         return $infolist->schema([
             Section::make('المعلومات الاساسية')->schema([
-                TextEntry::make('name')->label('الاسم:'),
-                TextEntry::make('number')->label('رقم المستفيد:'),
-                TextEntry::make('building')->label('المبني:'),
-                TextEntry::make('dob')->label('تاريخ الميلاد:')->date(),
-                TextEntry::make('age')->label('العمر:'),
-                TextEntry::make('doe')->label('تاريخ الانضمام:')->date(),
-                TextEntry::make('doe')->label('تاريخ الانضمام منذ:')->date()->since(),
-                TextEntry::make('external_visit_authorized')->label('المصرح لهم بالزيارة الخارجية:'),
-                TextEntry::make('internal_visit_authorized')->label('المصرح لهم بالزيارة الداخلية:'),
+                TextEntry::make('name')->label('الاسم:')->inlineLabel(),
+                TextEntry::make('number')->label('رقم المستفيد:')->inlineLabel(),
+                TextEntry::make('building')->label('المبني:')->inlineLabel(),
+                TextEntry::make('dob')->label('تاريخ الميلاد:')->date()->inlineLabel(),
+                TextEntry::make('age')->label('العمر:')->formatStateUsing(fn(string $state) => $state . ' سنوات ')->inlineLabel(),
+                TextEntry::make('doe')->label('تاريخ الانضمام:')->date()->inlineLabel(),
+                TextEntry::make('doe')->label('تاريخ الانضمام منذ:')->date()->since()->inlineLabel(),
+                TextEntry::make('external_visit_authorized')->label('المصرح لهم بالزيارة الخارجية:')->inlineLabel(),
+                TextEntry::make('internal_visit_authorized')->label('المصرح لهم بالزيارة الداخلية:')->inlineLabel(),
             ])->columns(2),
 
             Section::make('المرفقات')->schema([

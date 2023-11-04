@@ -4,10 +4,13 @@ namespace App\Filament\Resources\MaleResidentResource\RelationManagers;
 
 use App\Models\Relative;
 use App\Models\RelativeResident;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -34,12 +37,23 @@ class RelativesRelationManager extends RelationManager
             TextInput::make('phone1')->required()->label('الهاتف 1'),
             TextInput::make('phone2')->label('الهاتف 2'),
             TextInput::make('phone3')->label('الهاتف 3'),
-            Select::make('relation')->label('صلة القرابة')
+            Select::make('relation')
+                ->label('صلة القرابة')
                 ->options(RelativeResident::RELATION)
+                ->afterStateHydrated(function (Set $set, $state) {
+                    if (!array_key_exists($state, RelativeResident::RELATION)) {
+                        $set('other_relation', $state);
+                        $set('relation', 'other');
+                    }
+                })->live(),
+            TextInput::make('other_relation')
+                ->label('صلةالقرابة')
+                ->hidden(fn(Get $get) => $get('relation') !== 'other')
                 ->live(),
-            TextInput::make('other_relation')->label('صلةالقرابة')->hidden(fn(Get $get) => $get('relation') !== 'other')->live(),
+            Checkbox::make('is_guardian')->label('هل هذا القريب هو الوالي؟')
         ]);
     }
+
 
     public function table(Table $table): Table
     {
@@ -53,23 +67,39 @@ class RelativesRelationManager extends RelationManager
                 TextColumn::make('phone3')->searchable(),
                 TextColumn::make('relation')
                     ->label('صلة القرابة')
-                    ->formatStateUsing(fn(string $state): string => $state == 'other' ? $state : RelativeResident::RELATION[$state])
+                    ->formatStateUsing(fn(string $state) => array_key_exists($state, RelativeResident::RELATION) ? RelativeResident::RELATION[$state] : $state)
             ])
             ->filters([
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                Tables\Actions\CreateAction::make()->mutateFormDataUsing(function ($data) {
+                    if ($data['relation'] == 'other') {
+                        $data['relation'] = $data['other_relation'];
+                    }
+                    return $data;
+                }),
                 Tables\Actions\AttachAction::make()->form(fn(Tables\Actions\AttachAction $action) => [
                     $action->getRecordSelect()->preload(),
                     Select::make('relation')->label('صلة القرابة')
                         ->options(RelativeResident::RELATION)
                         ->live(),
                     TextInput::make('other_relation')->label('صلةالقرابة')->hidden(fn(Get $get) => $get('relation') !== 'other')->live(),
-                ]),
+                    Checkbox::make('is_guardian')->label('هل هذا القريب هو الوالي؟')
+                ])->mutateFormDataUsing(function ($data) {
+                    if ($data['relation'] == 'other') {
+                        $data['relation'] = $data['other_relation'];
+                    }
+                    return $data;
+                }),
             ])
             ->actions([
-//                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()->mutateFormDataUsing(function ($data) {
+                    if ($data['relation'] == 'other') {
+                        $data['relation'] = $data['other_relation'];
+                    }
+                    return $data;
+                }),
                 Tables\Actions\DetachAction::make(),
 //                Tables\Actions\DeleteAction::make(),
             ])
