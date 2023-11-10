@@ -17,9 +17,30 @@ class Resident extends Model implements HasMedia
     use SoftDeletes;
     use InteractsWithMedia;
 
+    const MALE_BUILDINGS = [
+        "1" => "1",
+        "2" => "2",
+        "3" => "3",
+        "4" => "4",
+        "5" => "5",
+        "6" => "6",
+    ];
 
-    const METALDEGREE = [
-        'simple' => 'اعاقة بسيط',
+    const FEMALE_BUILDINGS = [
+        "A1" => "A1",
+        'A2' => 'A2',
+        'A3' => 'A3',
+        'A4' => 'A4',
+        'B1' => 'B1',
+        'B2' => 'B2',
+        'B3' => 'B3',
+        'B4' => 'B4',
+        'B5' => 'B5',
+        'B6' => 'B6',
+        'DRO' => 'DRO'
+    ];
+    const METAL_DEGREE = [
+        'simple' => 'اعاقة بسيطة',
         'moderate' => 'اعاقة متوسطة',
         'strong' => 'اعاقة شديدة',
         'deep' => 'اعاقة عميقة',
@@ -37,6 +58,7 @@ class Resident extends Model implements HasMedia
         'internal_visit_authorized',
         'notes',
         'mental_disability_degree',
+        'city_id'
     ];
 
     protected $casts = [
@@ -94,4 +116,19 @@ class Resident extends Model implements HasMedia
         return $this->hasMany(Visit::class, 'resident_id');
     }
 
+    public function internalVisits(): HasMany
+    {
+        return $this->hasMany(Visit::class, 'resident_id')->where('type', 'internal');
+    }
+
+    public function externalVisits(): HasMany
+    {
+        return $this->hasMany(Visit::class, 'resident_id')->where('type', 'external');
+    }
+
+
+    public function city()
+    {
+        return $this->belongsTo(City::class, 'city_id');
+    }
 }

@@ -24,6 +24,7 @@ class MainHealthProblemResource extends Resource
     protected static ?string $pluralLabel = 'المشاكل الصحية';
 
     protected static ?string $navigationIcon = 'heroicon-o-bug-ant';
+    protected static ?int $navigationSort = 5;
     public static function form(Form $form): Form
     {
         return $form->schema([

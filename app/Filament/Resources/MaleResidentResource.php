@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\MaleResidentResource\Pages;
 use App\Filament\Resources\MaleResidentResource\RelationManagers\RelativesRelationManager;
 use App\Filament\Resources\MaleResidentResource\RelationManagers\ResidentialRelativesRelationManager;
+use App\Filament\Resources\MaleResidentResource\RelationManagers\VisitsRelationManager;
 use App\Models\Resident;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
@@ -19,9 +20,13 @@ use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class MaleResidentResource extends Resource
 {
@@ -34,9 +39,10 @@ class MaleResidentResource extends Resource
     protected static ?string $label = 'مقيم ذكر';
 
     protected static ?string $pluralLabel = 'المقيمين الذكور';
-    protected static ?string $navigationGroup = 'المقيمين';
     protected static ?int $navigationSort = 1;
     protected static ?string $navigationIcon = 'heroicon-o-user-plus';
+
+    protected static ?string $navigationLabel = 'قسم الذكور';
 
     public static function getEloquentQuery(): Builder
     {
@@ -54,9 +60,11 @@ class MaleResidentResource extends Resource
 
             DatePicker::make('doe')->label('تاريخ الدخول')->required(),
 
-            TextInput::make('building')->label('المبني')->required(),
+            Select::make('building')->label('المبني')->options(Resident::MALE_BUILDINGS)->required(),
 
-            Select::make('mental_disability_degree')->label('درجة الاعاقة')->options(Resident::METALDEGREE)->required(),
+            Select::make('city')->label('المدينة')->relationship('city', 'name')->preload()->searchable()->required(),
+
+            Select::make('mental_disability_degree')->label('درجة الاعاقة')->options(Resident::METAL_DEGREE)->required(),
 
             Textarea::make('external_visit_authorized')->label('المصرح لهم بالزياة الخارجية'),
 
@@ -64,7 +72,7 @@ class MaleResidentResource extends Resource
 
             Textarea::make('notes')->label('ملاحظات'),
 
-            Select::make('healthProblems')->label('المشاكل الصحية')->required()->multiple()->preload(true)->relationship('healthProblems', 'name'),
+            Select::make('healthProblems')->label('المشاكل الصحية')->multiple()->preload(true)->relationship('healthProblems', 'name'),
 
             SpatieMediaLibraryFileUpload::make('visit_allow_report')->collection('visit_allow_report')->label('استمارة تصريح الزيارة'),
 
@@ -74,30 +82,58 @@ class MaleResidentResource extends Resource
         ]);
     }
 
+    /**
+     * @throws \Exception
+     */
     public static function table(Table $table): Table
     {
         return $table->columns([
             TextColumn::make('id')->label('#')->sortable(),
 
-            TextColumn::make('number')->label('رقم المستفيد')->sortable(),
+            TextColumn::make('number')->label('رقم المستفيد')->sortable()->searchable(),
 
             TextColumn::make('name')->label('الاسم')->searchable()->sortable(),
 
-            TextColumn::make('age')->label('العمر')->sortable(['dob']),
+            TextColumn::make('age')->label('العمر')->sortable(['dob'])->formatStateUsing(fn($state) => $state . ' عاماً '),
 
             TextColumn::make('building')->label('المبني'),
 
+            TextColumn::make('internal_visits_count')->label('عدد الزيارات الداخلية')->counts('internalVisits'),
+            TextColumn::make('external_visits_count')->label('عدد الزيارات الداخلية')->counts('externalVisits'),
+            TextColumn::make('last_visit_date')
+                ->state(function (Resident $record) {
+                    return $record->visits()->latest()->first()->date_time ?? '';
+                })
+                ->label('تاريخ اخر زيارة')
+                ->dateTime(),
         ])->actions([
             Action::make('move')
                 ->action(fn(Resident $resident) => $resident->update(['type', 'female']))
                 ->icon('heroicon-o-user-minus')
-                ->label('نقل المقييم'),
+                ->label('نقل'),
             ViewAction::make(),
             EditAction::make(),
             DeleteAction::make(),
         ])->filters([
-            TrashedFilter::make()
-        ]);
+            TrashedFilter::make(),
+            TernaryFilter::make('ability_to_external_visit')
+                ->label('القدرة علي الزيارة الخارجية'),
+            SelectFilter::make('mental_disability_degree')
+                ->label('مستوي الاعاقة')
+                ->options(Resident::METAL_DEGREE),
+            SelectFilter::make('healthProblems')
+                ->label('المشاكل الصحية')
+                ->searchable()
+                ->preload()
+                ->multiple()
+                ->relationship('healthProblems', 'name'),
+            SelectFilter::make('city')
+                ->relationship('city', 'name')
+                ->multiple(),
+            SelectFilter::make('building')
+                ->label('المبني')
+                ->options(Resident::MALE_BUILDINGS),
+        ])->filtersFormColumns(2)->striped();
     }
 
     public static function getPages(): array
@@ -115,11 +151,12 @@ class MaleResidentResource extends Resource
         return [
             ResidentialRelativesRelationManager::class,
             RelativesRelationManager::class,
+            VisitsRelationManager::class,
         ];
     }
 
     public static function getGloballySearchableAttributes(): array
     {
-        return ['name'];
+        return ['name', 'number'];
     }
 }

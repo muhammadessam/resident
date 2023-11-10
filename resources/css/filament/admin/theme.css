@@ -5,3 +5,15 @@
 .fi-sidebar {
     @apply bg-white !important;
 }
+::-webkit-scrollbar {
+    width: 5px !important;
+    height: 5px;
+}
+
+::-webkit-scrollbar-track {
+    @apply bg-gray-500 rounded-2xl;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-primary-500 rounded-2xl;
+}

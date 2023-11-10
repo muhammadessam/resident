@@ -31,9 +31,9 @@ class FemaleResidentResource extends Resource
     protected static ?string $label = 'مقيم انثي';
     protected static ?string $pluralLabel = 'المقيمين الاناث';
 
-    protected static ?string $navigationGroup = 'المقيمين';
     protected static ?int $navigationSort = 2;
     protected static ?string $navigationIcon = 'heroicon-o-user-minus';
+    protected static ?string $navigationLabel = 'قسم الاناث';
 
     public static function getEloquentQuery(): Builder
     {
@@ -57,7 +57,7 @@ class FemaleResidentResource extends Resource
 
             Select::make('mental_disability_degree')
                 ->label('درجة الاعاقة')
-                ->options(Resident::METALDEGREE)
+                ->options(Resident::METAL_DEGREE)
                 ->required(),
 
 
@@ -120,6 +120,6 @@ class FemaleResidentResource extends Resource
 
     public static function getGloballySearchableAttributes(): array
     {
-        return ['name'];
+        return ['name', 'number'];
     }
 }

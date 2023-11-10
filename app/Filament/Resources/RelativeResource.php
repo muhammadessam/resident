@@ -24,6 +24,8 @@ class RelativeResource extends Resource
     protected static ?string $label = 'قريب';
     protected static ?string $pluralLabel = 'الاقارب';
     protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static ?int $navigationSort = 4;
+
 
     public static function form(Form $form): Form
     {

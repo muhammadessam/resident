@@ -35,6 +35,7 @@ class VisitResource extends Resource
     protected static ?string $label = 'الزيارة';
     protected static ?string $pluralLabel = 'الزيارات';
     protected static ?string $navigationIcon = 'heroicon-o-inbox-arrow-down';
+    protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {
