@@ -14,6 +14,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
@@ -87,9 +88,13 @@ class MaleResidentResource extends Resource
             TextColumn::make('building')->label('المبني'),
 
         ])->actions([
+            Action::make('move')
+                ->action(fn(Resident $resident) => $resident->update(['type', 'female']))
+                ->icon('heroicon-o-user-minus')
+                ->label('نقل المقييم'),
             ViewAction::make(),
             EditAction::make(),
-            DeleteAction::make()
+            DeleteAction::make(),
         ])->filters([
             TrashedFilter::make()
         ]);

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Relative extends Model
@@ -23,5 +24,10 @@ class Relative extends Model
         return $this->belongsToMany(Resident::class, 'relative_resident')
             ->withTimestamps()
             ->using(RelativeResident::class)->withPivot('relation', 'is_guardian');
+    }
+
+    public function visits(): HasMany
+    {
+        return $this->hasMany(Visit::class, 'relative_id');
     }
 }

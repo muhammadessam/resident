@@ -47,7 +47,7 @@ class RelativesRelationManager extends RelationManager
                     }
                 })->live(),
             TextInput::make('other_relation')
-                ->label('صلةالقرابة')
+                ->label('صلة القرابة')
                 ->hidden(fn(Get $get) => $get('relation') !== 'other')
                 ->live(),
             Checkbox::make('is_guardian')->label('هل هذا القريب هو الوالي؟')
