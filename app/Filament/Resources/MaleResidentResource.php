@@ -6,6 +6,7 @@ use App\Filament\Resources\MaleResidentResource\Pages;
 use App\Filament\Resources\MaleResidentResource\RelationManagers\RelativesRelationManager;
 use App\Filament\Resources\MaleResidentResource\RelationManagers\ResidentialRelativesRelationManager;
 use App\Filament\Resources\MaleResidentResource\RelationManagers\VisitsRelationManager;
+use App\Filament\Resources\MaleResidentResource\Widgets\ResidentVisitsChart;
 use App\Models\Resident;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
@@ -158,5 +159,10 @@ class MaleResidentResource extends Resource
     public static function getGloballySearchableAttributes(): array
     {
         return ['name', 'number'];
+    }
+
+    public static function getWidgets(): array
+    {
+        return [ResidentVisitsChart::class];
     }
 }

@@ -15,6 +15,11 @@ class ViewMaleResident extends ViewRecord
 {
     protected static string $resource = MaleResidentResource::class;
 
+    protected function getFooterWidgets(): array
+    {
+        return [MaleResidentResource\Widgets\ResidentVisitsChart::class];
+    }
+
     public function infolist(Infolist $infolist): Infolist
     {
         return $infolist->schema([

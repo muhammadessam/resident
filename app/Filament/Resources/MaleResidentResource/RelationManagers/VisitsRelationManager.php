@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\MaleResidentResource\RelationManagers;
 
+use App\Models\RelativeResident;
 use App\Models\Visit;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -36,7 +37,16 @@ class VisitsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('id')
             ->columns([
+                TextColumn::make('id')->label('الرقم المرجعي')->formatStateUsing(fn($record) =>str_pad($record->id, 5, '0', STR_PAD_LEFT)),
+
                 TextColumn::make('relative.name')->label('اسم الزائر'),
+
+                TextColumn::make('relative_relation')
+                    ->label('صلة القرابة')
+                    ->getStateUsing(function ($record) {
+                        $relation = RelativeResident::where('resident_id', $record->resident_id)->where('relative_id', $record->relative_id)->first()->relation;
+                        return array_key_exists($relation, RelativeResident::RELATION) ? RelativeResident::RELATION[$relation] : $relation;
+                    }),
 
                 TextColumn::make('type')->label('نوع الزيارة')->formatStateUsing(fn(Visit $visit) => Visit::TYPE[$visit->type]),
 
