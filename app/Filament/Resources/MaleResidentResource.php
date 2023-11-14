@@ -10,11 +10,13 @@ use App\Filament\Resources\MaleResidentResource\Widgets\ResidentVisitsChart;
 use App\Models\Resident;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\DeleteAction;
@@ -28,6 +30,8 @@ use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class MaleResidentResource extends Resource
 {
@@ -47,7 +51,7 @@ class MaleResidentResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return Resident::query()->male();
+        return Resident::query()->male()->withoutGlobalScopes([SoftDeletingScope::class]);
     }
 
     public static function form(Form $form): Form
@@ -75,11 +79,17 @@ class MaleResidentResource extends Resource
 
             Select::make('healthProblems')->label('المشاكل الصحية')->multiple()->preload(true)->relationship('healthProblems', 'name'),
 
-            SpatieMediaLibraryFileUpload::make('visit_allow_report')->collection('visit_allow_report')->label('استمارة تصريح الزيارة'),
-
-            SpatieMediaLibraryFileUpload::make('uploads')->collection('uploads')->multiple()->label('مرفقات اخري'),
-
             Checkbox::make('ability_to_external_visit')->label('القدرية علي الزيارة الخارجية'),
+
+            SpatieMediaLibraryFileUpload::make('visit_allow_report')
+                ->collection('visit_allow_report')
+                ->label('استمارة تصريح الزيارة'),
+
+            SpatieMediaLibraryFileUpload::make('uploads')
+                ->collection('uploads')
+                ->multiple()
+                ->label('مرفقات اخري'),
+
         ]);
     }
 
@@ -100,13 +110,16 @@ class MaleResidentResource extends Resource
             TextColumn::make('building')->label('المبني'),
 
             TextColumn::make('internal_visits_count')->label('عدد الزيارات الداخلية')->counts('internalVisits'),
+
             TextColumn::make('external_visits_count')->label('عدد الزيارات الداخلية')->counts('externalVisits'),
+
             TextColumn::make('last_visit_date')
                 ->state(function (Resident $record) {
                     return $record->visits()->latest()->first()->date_time ?? '';
                 })
                 ->label('تاريخ اخر زيارة')
                 ->date('Y-m-d'),
+
         ])->actions([
             Action::make('move')
                 ->action(fn(Resident $resident) => $resident->update(['type', 'female']))
@@ -114,7 +127,10 @@ class MaleResidentResource extends Resource
                 ->label('نقل'),
             ViewAction::make(),
             EditAction::make(),
-            DeleteAction::make(),
+            DeleteAction::make()->form([
+                TextInput::make('deletion_reason')->required()->label('سبب الحذف'),
+                DateTimePicker::make('deleted_at')->required()->label('تاريخ الحذف')->default(now()),
+            ])->action(fn(array $data, Resident $record) => $record->update($data)),
         ])->filters([
             TrashedFilter::make(),
             TernaryFilter::make('ability_to_external_visit')

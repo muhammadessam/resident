@@ -58,7 +58,11 @@ class Resident extends Model implements HasMedia
         'internal_visit_authorized',
         'notes',
         'mental_disability_degree',
-        'city_id'
+        'city_id',
+        'deletion_reason',
+        'deleted_at',
+        'created_at',
+        'updated_at',
     ];
 
     protected $casts = [
