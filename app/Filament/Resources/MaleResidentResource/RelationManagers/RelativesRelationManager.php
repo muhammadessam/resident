@@ -5,6 +5,7 @@ namespace App\Filament\Resources\MaleResidentResource\RelationManagers;
 use App\Models\Relative;
 use App\Models\RelativeResident;
 use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
@@ -15,6 +16,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Livewire\Livewire;
 
 class RelativesRelationManager extends RelationManager
 {
@@ -80,7 +82,13 @@ class RelativesRelationManager extends RelationManager
                     return $data;
                 }),
                 Tables\Actions\AttachAction::make()->form(fn(Tables\Actions\AttachAction $action) => [
-                    $action->getRecordSelect()->preload(),
+                    $action->getRecordSelect()->preload()->live(),
+
+                    Placeholder::make('id_number')
+                        ->label('رقم الهوية')
+                        ->content(fn(Get $get) => Relative::find($get('recordId'))->id_number)
+                        ->hidden(fn($get) => $get('recordId') == null),
+
                     Select::make('relation')->label('صلة القرابة')
                         ->options(RelativeResident::RELATION)
                         ->live(),

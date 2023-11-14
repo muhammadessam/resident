@@ -95,7 +95,7 @@ class MaleResidentResource extends Resource
 
             TextColumn::make('name')->label('الاسم')->searchable()->sortable(),
 
-            TextColumn::make('age')->label('العمر')->sortable(['dob'])->formatStateUsing(fn($state) => $state . ' عاماً '),
+            TextColumn::make('age')->label('العمر')->sortable(['dob'])->formatStateUsing(fn($state) => $state . ' سنة '),
 
             TextColumn::make('building')->label('المبني'),
 
@@ -106,7 +106,7 @@ class MaleResidentResource extends Resource
                     return $record->visits()->latest()->first()->date_time ?? '';
                 })
                 ->label('تاريخ اخر زيارة')
-                ->dateTime(),
+                ->date('Y-m-d'),
         ])->actions([
             Action::make('move')
                 ->action(fn(Resident $resident) => $resident->update(['type', 'female']))
