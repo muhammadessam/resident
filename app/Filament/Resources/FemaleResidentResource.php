@@ -21,8 +21,8 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Filament\Widgets\ChartWidget;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class FemaleResidentResource extends Resource
 {
@@ -41,7 +41,7 @@ class FemaleResidentResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return Resident::query()->female();
+        return Resident::query()->female()->withoutGlobalScopes([SoftDeletingScope::class]);
     }
 
     public static function form(Form $form): Form
