@@ -18,7 +18,10 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\BulkAction;
+use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
@@ -129,23 +132,22 @@ class MaleResidentResource extends Resource
             ])->action(fn(array $data, Resident $record) => $record->update($data)),
         ])->filters([
             TrashedFilter::make(),
-            TernaryFilter::make('ability_to_external_visit')
-                ->label('القدرة علي الزيارة الخارجية'),
-            SelectFilter::make('mental_disability_degree')
-                ->label('مستوي الاعاقة')
-                ->options(Resident::METAL_DEGREE),
+
+            TernaryFilter::make('ability_to_external_visit')->label('القدرة علي الزيارة الخارجية'),
+
+            SelectFilter::make('mental_disability_degree')->label('مستوي الاعاقة')->options(Resident::METAL_DEGREE),
+
             SelectFilter::make('healthProblems')
                 ->label('المشاكل الصحية')
                 ->searchable()
                 ->preload()
                 ->multiple()
                 ->relationship('healthProblems', 'name'),
-            SelectFilter::make('city')
-                ->relationship('city', 'name')
-                ->multiple(),
-            SelectFilter::make('building')
-                ->label('المبني')
-                ->options(Resident::MALE_BUILDINGS),
+
+            SelectFilter::make('city')->relationship('city', 'name')->multiple(),
+
+            SelectFilter::make('building')->label('المبني')->options(Resident::MALE_BUILDINGS),
+
         ])->filtersFormColumns(2)->striped();
     }
 

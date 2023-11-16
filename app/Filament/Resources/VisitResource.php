@@ -21,6 +21,9 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -114,10 +117,7 @@ class VisitResource extends Resource
             Select::make('type')
                 ->label('نوع الزيارة')
                 ->required()
-                ->options([
-                    'external' => 'زيارة خارجية',
-                    'internal' => 'زيارة داخلية',
-                ])->live(),
+                ->options(Visit::TYPE)->live(),
 
             DateTimePicker::make('date_time')
                 ->label('تاريخ ووقت الزيارة')
@@ -201,6 +201,8 @@ class VisitResource extends Resource
             TextColumn::make('date_time')->label('وقت الزيارة'),
 
             TextColumn::make('companion_no')->label('عدد المرافقين'),
+        ])->actions([
+            ViewAction::make(), EditAction::make(), DeleteAction::make()
         ]);
     }
 

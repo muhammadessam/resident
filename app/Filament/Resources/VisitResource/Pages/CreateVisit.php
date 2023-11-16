@@ -9,9 +9,18 @@ class CreateVisit extends CreateRecord
 {
     protected static string $resource = VisitResource::class;
 
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        if ($data['type'] == 'internal') {
+            $data['duration_type'] = 'hours';
+            $data['duration'] = 1;
+        }
+        return $data;
+    }
+
     protected function getRedirectUrl(): string
     {
-       return $this->getResource()::getUrl('index');
+        return $this->getResource()::getUrl('index');
     }
 
     protected function getActions(): array
