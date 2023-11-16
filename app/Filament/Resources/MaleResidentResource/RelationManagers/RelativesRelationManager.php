@@ -22,7 +22,7 @@ class RelativesRelationManager extends RelationManager
 {
     protected static string $relationship = 'relatives';
     protected static ?string $inverseRelationship = 'residents';
-    protected static ?string $title = 'التكوين الاسري للمقيم';
+    protected static ?string $title = 'اقارب المقييم';
     protected static ?string $label = 'قريب';
     protected static ?string $pluralLabel = 'الاقارب';
 

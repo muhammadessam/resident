@@ -3,7 +3,11 @@
 namespace App\Filament\Resources\FemaleResidentResource\Pages;
 
 use App\Filament\Resources\FemaleResidentResource;
+use App\Filament\Resources\MaleResidentResource\Widgets\ResidentVisitsChart;
+use App\Models\Resident;
+use Carbon\Carbon;
 use Filament\Actions;
+use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\SpatieMediaLibraryImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
@@ -13,21 +17,36 @@ class ViewFemaleResident extends ViewRecord
 {
     protected static string $resource = FemaleResidentResource::class;
 
+    protected function getFooterWidgets(): array
+    {
+        return [
+            ResidentVisitsChart::class,
+        ];
+    }
+
     public function infolist(Infolist $infolist): Infolist
     {
         return $infolist->schema([
-            TextEntry::make('name')->label('الاسم:'),
-            TextEntry::make('number')->label('رقم المستفيد:'),
-            TextEntry::make('building')->label('المبني:'),
-            TextEntry::make('dob')->label('تاريخ الميلاد:')->date(),
-            TextEntry::make('age')->label('العمر:'),
-            TextEntry::make('doe')->label('تاريخ الانضمام:')->date(),
-            TextEntry::make('doe')->label('تاريخ الانضمام منذ:')->date()->since(),
-            TextEntry::make('external_visit_authorized')->label('المصرح لهم بالزيارة الخارجية:'),
-            TextEntry::make('internal_visit_authorized')->label('المصرح لهم بالزيارة الداخلية:'),
-            SpatieMediaLibraryImageEntry::make('visit_allow_report')->label('استمارة تصريح الزيارة:')->collection('visit_allow_report'),
-            SpatieMediaLibraryImageEntry::make('uploads')->label('مرفقات اخري:')->collection('uploads'),
+            Section::make('المعلومات الاساسية')->schema(components: [
+                TextEntry::make('name')->label('الاسم:')->inlineLabel()->weight('bold'),
+                TextEntry::make('number')->label('رقم المستفيد:')->inlineLabel()->weight('bold'),
+                TextEntry::make('healthProblems.name')->label('المشاكل الصحية:')->inlineLabel()->weight('bold'),
+                TextEntry::make('mental_disability_degree')
+                    ->formatStateUsing(fn($state) => Resident::METAL_DEGREE[$state])
+                    ->label('مستوي الاعاقة العقلية:')->inlineLabel()->weight('bold'),
+                TextEntry::make('building')->label('المبني:')->inlineLabel()->weight('bold'),
+                TextEntry::make('dob')->label('تاريخ الميلاد:')->formatStateUsing(fn(string $state) => Carbon::parse($state)->toDateString() . ' العمر ' . Carbon::parse($state)->age . ' سنة ')->inlineLabel(),
+                TextEntry::make('doe')->label('تاريخ الانضمام:')->formatStateUsing(fn(string $state) => Carbon::parse($state)->toDateString() . ' ' . Carbon::parse($state)->since())->inlineLabel(),
+                TextEntry::make('city.name')->label('المدينة:')->inlineLabel(),
+                TextEntry::make('external_visit_authorized')->label('المصرح لهم بالزيارة الخارجية:')->inlineLabel(),
+                TextEntry::make('internal_visit_authorized')->label('المصرح لهم بالزيارة الداخلية:')->inlineLabel(),
+                TextEntry::make('deletion_reason')->label('سبب الحذف:')->inlineLabel()->hidden(fn(Resident $resident) => is_null($resident->deleted_at)),
+            ])->columns(2),
 
+            Section::make('المرفقات')->schema([
+                SpatieMediaLibraryImageEntry::make('visit_allow_report')->label('استمارة تصريح الزيارة:')->collection('visit_allow_report'),
+                SpatieMediaLibraryImageEntry::make('uploads')->label('مرفقات اخري:')->collection('uploads'),
+            ])->columns(2),
 
         ]);
     }

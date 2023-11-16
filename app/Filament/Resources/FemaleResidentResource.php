@@ -3,7 +3,10 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\FemaleResidentResource\Pages;
-use App\Filament\Resources\FemaleResidentResource\RelationManagers\ResidentialRelativesRelationManager;
+use App\Filament\Resources\MaleResidentResource\RelationManagers\RelativesRelationManager;
+use App\Filament\Resources\MaleResidentResource\RelationManagers\ResidentialRelativesRelationManager;
+use App\Filament\Resources\MaleResidentResource\RelationManagers\VisitsRelationManager;
+use App\Filament\Resources\MaleResidentResource\Widgets\ResidentVisitsChart;
 use App\Models\Resident;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
@@ -18,6 +21,7 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Filament\Widgets\ChartWidget;
 use Illuminate\Database\Eloquent\Builder;
 
 class FemaleResidentResource extends Resource
@@ -115,11 +119,20 @@ class FemaleResidentResource extends Resource
     {
         return [
             ResidentialRelativesRelationManager::class,
+            VisitsRelationManager::class,
+            RelativesRelationManager::class,
         ];
     }
 
     public static function getGloballySearchableAttributes(): array
     {
         return ['name', 'number'];
+    }
+
+    public static function getWidgets(): array
+    {
+        return [
+            ResidentVisitsChart::class,
+        ];
     }
 }
