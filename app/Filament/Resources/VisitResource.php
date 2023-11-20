@@ -7,6 +7,7 @@ use App\Models\Relative;
 use App\Models\RelativeResident;
 use App\Models\Resident;
 use App\Models\Visit;
+use Exception;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
@@ -21,10 +22,14 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -187,6 +192,9 @@ class VisitResource extends Resource
         ])->columns(2);
     }
 
+    /**
+     * @throws Exception
+     */
     public static function table(Table $table): Table
     {
         return $table->columns([
@@ -201,9 +209,39 @@ class VisitResource extends Resource
             TextColumn::make('date_time')->label('وقت الزيارة'),
 
             TextColumn::make('companion_no')->label('عدد المرافقين'),
+        ])->filters([
+            SelectFilter::make('type')
+                ->options(Visit::TYPE)
+                ->label('نوع الزيارة'),
+            Filter::make('date_time')
+                ->form([
+                    DatePicker::make('start')->label('بداية من: ')->format('d-m-Y')->inlineLabel(true),
+                    DatePicker::make('end')->label('نهاية الي: ')->format('d-m-Y')->inlineLabel(true),
+                ])
+                ->query(function (Builder $query, array $data): Builder {
+                    return $query
+                        ->when(
+                            $data['start'],
+                            fn(Builder $query, $date): Builder => $query->whereDate('date_time', '>=', $date),
+                        )
+                        ->when(
+                            $data['end'],
+                            fn(Builder $query, $date): Builder => $query->whereDate('date_time', '<=', $date),
+                        );
+                })->indicateUsing(function (array $data): ?string {
+                    $indicator = null;
+                    if ($data['start']) {
+                        $indicator = 'بداية من تاريخ: ' . $data['start'];
+                    }
+                    if ($data['end']) {
+                        $indicator .= ' الي تاريخ: ' . $data['end'];
+                    }
+                    return $indicator;
+                })
         ])->actions([
             ViewAction::make(), EditAction::make(), DeleteAction::make()
-        ]);
+        ])
+            ;
     }
 
     public static function getPages(): array
