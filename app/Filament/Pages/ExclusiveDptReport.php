@@ -81,9 +81,7 @@ class ExclusiveDptReport extends Page implements HasTable, HasInfolists
                     })
 
             ])->bulkActions([
-                Action::make('print_to_pdf')->label('تصدير الي pdf طباعة')->action(function ($records) {
 
-                }),
             ])->headerActions([
 
             ]);

@@ -65,7 +65,7 @@ class VisitsRelationManager extends RelationManager
                         if ($data['relation'] == 'other') {
                             $data['relation'] = $data['other_relation'];
                         }
-                        Relative::create($data)->residents()->syncWithPivotValues($get('resident_id'), $data);
+                        Relative::create($data)->residents()->syncWithPivotValues($this->getOwnerRecord()->id, $data);
                     })
                     ->fillEditOptionActionFormUsing(function (Get $get) {
                         $data = Relative::find($get('relative_id'))->only(['name', 'id_number', 'phone1', 'phone2', 'phone3']);

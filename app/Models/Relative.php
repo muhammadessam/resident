@@ -23,7 +23,8 @@ class Relative extends Model
     {
         return $this->belongsToMany(Resident::class, 'relative_resident')
             ->withTimestamps()
-            ->using(RelativeResident::class)->withPivot('relation', 'is_guardian');
+            ->using(RelativeResident::class)
+            ->withPivot('relation', 'is_guardian');
     }
 
     public function visits(): HasMany
