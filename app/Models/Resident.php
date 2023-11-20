@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -17,6 +18,10 @@ class Resident extends Model implements HasMedia
     use SoftDeletes;
     use InteractsWithMedia;
 
+    const TYPE = [
+        'male' => 'الذكور',
+        'female' => 'الاناث',
+    ];
     const MALE_BUILDINGS = [
         "1" => "1",
         "2" => "2",
@@ -131,7 +136,7 @@ class Resident extends Model implements HasMedia
     }
 
 
-    public function city()
+    public function city(): BelongsTo
     {
         return $this->belongsTo(City::class, 'city_id');
     }

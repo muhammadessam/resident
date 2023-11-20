@@ -2,7 +2,7 @@
 
 namespace App\Filament\Pages;
 
-use App\Exports\VisitsExport;
+use App\Exports\VisitsExportTemplate20;
 use App\Models\Visit;
 use App\TCPDFHelper\VisitTCPDF;
 use Carbon\Carbon;
@@ -50,7 +50,7 @@ class VisitsReport extends Page implements HasTable
                     return Carbon::parse($visit->date_time)->add($visit->duration_type, $visit->duration);
                 }),
             ])->filters([
-                Filter::make('created_at')
+                Filter::make('date_time')
                     ->form([
                         DatePicker::make('from')->label('من: ')->inlineLabel()->displayFormat('d-m-Y'),
                         DatePicker::make('until')->label('الي: ')->inlineLabel()->displayFormat('d-m-Y'),
@@ -76,13 +76,13 @@ class VisitsReport extends Page implements HasTable
                     })
             ])->bulkActions([
                 BulkAction::make('excel_report')->label('تصدير المحدد XSL')->action(function ($records) {
-                    return Excel::download(new VisitsExport($records), now() . '.xlsx');
+                    return Excel::download(new VisitsExportTemplate20($records), now() . '.xlsx');
                 })
             ])->headerActions([
                 Action::make('excel_report')
                     ->label('تصدير الكل XSL')
                     ->action(function () {
-                        return Excel::download(new VisitsExport($this->getFilteredTableQuery()->get()), now() . '.xlsx');
+                        return Excel::download(new VisitsExportTemplate20($this->getFilteredTableQuery()->get()), now() . '.xlsx');
                     })
             ])->headerActionsPosition(HeaderActionsPosition::Bottom);
     }

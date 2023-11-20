@@ -18,7 +18,7 @@ use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class VisitsExport implements WithEvents, WithHeadings, ShouldAutoSize, WithMapping, WithStyles, FromCollection
+class VisitsExportTemplate20 implements WithEvents, WithHeadings, ShouldAutoSize, WithMapping, WithStyles, FromCollection
 {
 
     private Collection $data;
