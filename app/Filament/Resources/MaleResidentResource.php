@@ -23,6 +23,7 @@ use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -126,10 +127,14 @@ class MaleResidentResource extends Resource
                 ->label('نقل'),
             ViewAction::make(),
             EditAction::make(),
+            RestoreAction::make(),
             DeleteAction::make()->form([
                 TextInput::make('deletion_reason')->required()->label('سبب الحذف'),
                 DateTimePicker::make('deleted_at')->required()->label('تاريخ الحذف')->default(now()),
-            ])->action(fn(array $data, Resident $record) => $record->update($data)),
+            ])->action(function (array $data, Resident $record) {
+                $record->update($data);
+                $record->delete();
+            }),
         ])->filters([
             TrashedFilter::make(),
 

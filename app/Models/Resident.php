@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\InteractsWithSoftCascadedRelation;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -17,6 +18,10 @@ class Resident extends Model implements HasMedia
 {
     use SoftDeletes;
     use InteractsWithMedia;
+    use InteractsWithSoftCascadedRelation;
+
+    protected static array $relations_to_cascade = ['visits', 'relatives'];
+
 
     const TYPE = [
         'male' => 'الذكور',
@@ -65,7 +70,6 @@ class Resident extends Model implements HasMedia
         'mental_disability_degree',
         'city_id',
         'deletion_reason',
-        'deleted_at',
         'created_at',
         'updated_at',
     ];
