@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Models\Resident;
+use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Concerns\InteractsWithInfolists;
@@ -78,6 +79,12 @@ class ExclusiveDptReport extends Page implements HasTable, HasInfolists
                         }
                         return $indicator;
                     })
+
+            ])->bulkActions([
+                Action::make('print_to_pdf')->label('تصدير الي pdf طباعة')->action(function ($records) {
+
+                }),
+            ])->headerActions([
 
             ]);
     }
