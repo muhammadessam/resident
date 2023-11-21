@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class RelativeResident extends Pivot
 {
+    use HasFactory;
+
     const RELATION = [
         'father' => 'اب',
         'mother' => 'ام',

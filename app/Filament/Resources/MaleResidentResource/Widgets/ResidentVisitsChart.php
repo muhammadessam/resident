@@ -20,9 +20,9 @@ class ResidentVisitsChart extends ChartWidget
     {
         return [
             '' => [
-                'start' => Carbon::parse($this->record->visits()->min('date_time')),
-                'end' => Carbon::parse($this->record->visits()->max('date_time'))->addDay(),
-                'per' => 'day',
+                'start' => Carbon::parse($this->record->visits()->min('date_time'))->subDay(),
+                'end' => Carbon::parse($this->record->visits()->max('date_time'))->addYear(),
+                'per' => 'year',
             ],
             'week' => [
                 'start' => now()->startOfWeek(),

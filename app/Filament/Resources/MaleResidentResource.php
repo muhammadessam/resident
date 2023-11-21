@@ -18,10 +18,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
-use Filament\Tables\Actions\BulkAction;
-use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\ViewAction;
@@ -111,7 +108,7 @@ class MaleResidentResource extends Resource
 
             TextColumn::make('internal_visits_count')->label('عدد الزيارات الداخلية')->counts('internalVisits'),
 
-            TextColumn::make('external_visits_count')->label('عدد الزيارات الداخلية')->counts('externalVisits'),
+            TextColumn::make('external_visits_count')->label('عدد الزيارات الخارجية')->counts('externalVisits'),
 
             TextColumn::make('last_visit_date')
                 ->state(function (Resident $record) {

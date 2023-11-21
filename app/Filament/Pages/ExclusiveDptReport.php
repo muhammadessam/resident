@@ -2,14 +2,17 @@
 
 namespace App\Filament\Pages;
 
+use App\Exports\ExclusiveReportExport;
 use App\Models\Resident;
-use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Concerns\InteractsWithInfolists;
 use Filament\Infolists\Contracts\HasInfolists;
 use Filament\Infolists\Infolist;
 use Filament\Pages\Page;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\BulkAction;
+use Filament\Tables\Actions\HeaderActionsPosition;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
@@ -17,6 +20,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ExclusiveDptReport extends Page implements HasTable, HasInfolists
 {
@@ -34,7 +38,8 @@ class ExclusiveDptReport extends Page implements HasTable, HasInfolists
 
     public function table(Table $table): Table
     {
-        return $table->query(Resident::query())
+        return $table
+            ->query(Resident::query())
             ->columns([
                 TextColumn::make('name')->label('اسم المقييم'),
                 TextColumn::make('internal_visits_count')
@@ -81,10 +86,20 @@ class ExclusiveDptReport extends Page implements HasTable, HasInfolists
                     })
 
             ])->bulkActions([
+                BulkAction::make('selected_to_pdf')->label('تصدير المحدد PDF')->action(function ($records) {
+                    return Excel::download(new ExclusiveReportExport($records), 'new.pdf');
+                }),
+                BulkAction::make('selected_to_excel')->label('تصدير المحدد EXCEL')->action(function ($records) {
 
+                }),
             ])->headerActions([
+                Action::make('all_to_pdf')->label('تصدير الكل PDF')->action(function ($livewire) {
 
-            ]);
+                }),
+                Action::make('all_to_excel')->label('تصدير الكل EXCEL')->action(function ($livewire) {
+
+                }),
+            ])->headerActionsPosition(HeaderActionsPosition::Bottom);
     }
 
     public function countInfolist(Infolist $infolist): Infolist

@@ -10,16 +10,22 @@ use App\Filament\Resources\MaleResidentResource\Widgets\ResidentVisitsChart;
 use App\Models\Resident;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -49,21 +55,17 @@ class FemaleResidentResource extends Resource
         return $form->schema([
             TextInput::make('name')->label('الاسم')->required(),
 
-            TextInput::make('number')->label('رقم المستفيد')
-                ->required()
-                ->unique('residents', 'number', ignoreRecord: true),
+            TextInput::make('number')->label('رقم المستفيد')->required()->unique('residents', 'number', ignoreRecord: true),
 
             DatePicker::make('dob')->label('تاريخ الميلاد')->required(),
 
             DatePicker::make('doe')->label('تاريخ الدخول')->required(),
 
-            TextInput::make('building')->label('المبني')->required(),
+            Select::make('building')->label('المبني')->options(Resident::FEMALE_BUILDINGS)->required(),
 
-            Select::make('mental_disability_degree')
-                ->label('درجة الاعاقة')
-                ->options(Resident::METAL_DEGREE)
-                ->required(),
+            Select::make('city')->label('المدينة')->relationship('city', 'name')->preload()->searchable()->required(),
 
+            Select::make('mental_disability_degree')->label('درجة الاعاقة')->options(Resident::METAL_DEGREE)->required(),
 
             Textarea::make('external_visit_authorized')->label('المصرح لهم بالزياة الخارجية'),
 
@@ -71,12 +73,9 @@ class FemaleResidentResource extends Resource
 
             Textarea::make('notes')->label('ملاحظات'),
 
-            Select::make('healthProblems')
-                ->label('المشاكل الصحية')
-                ->required()
-                ->multiple()
-                ->preload(true)
-                ->relationship('healthProblems', 'name'),
+            Select::make('healthProblems')->label('المشاكل الصحية')->multiple()->preload(true)->relationship('healthProblems', 'name'),
+
+            Checkbox::make('ability_to_external_visit')->label('القدرية علي الزيارة الخارجية'),
 
             SpatieMediaLibraryFileUpload::make('visit_allow_report')
                 ->collection('visit_allow_report')
@@ -87,22 +86,70 @@ class FemaleResidentResource extends Resource
                 ->multiple()
                 ->label('مرفقات اخري'),
 
-
-            Checkbox::make('ability_to_external_visit')->label('القدرية علي الزيارة الخارجية'),
         ]);
     }
 
+    /**
+     * @throws \Exception
+     */
     public static function table(Table $table): Table
     {
         return $table->columns([
             TextColumn::make('id')->label('#')->sortable(),
-            TextColumn::make('number')->label('رقم المستفيد')->sortable(),
+
+            TextColumn::make('number')->label('رقم المستفيد')->sortable()->searchable(),
+
             TextColumn::make('name')->label('الاسم')->searchable()->sortable(),
-            TextColumn::make('age')->label('العمر'),
+
+            TextColumn::make('age')->label('العمر')->sortable(['dob'])->formatStateUsing(fn($state) => $state . ' سنة '),
+
             TextColumn::make('building')->label('المبني'),
+
+            TextColumn::make('internal_visits_count')->label('عدد الزيارات الداخلية')->counts('internalVisits'),
+
+            TextColumn::make('external_visits_count')->label('عدد الزيارات الخارجية')->counts('externalVisits'),
+
+            TextColumn::make('last_visit_date')
+                ->state(function (Resident $record) {
+                    return $record->visits()->latest()->first()->date_time ?? '';
+                })
+                ->label('تاريخ اخر زيارة')
+                ->date('Y-m-d'),
+
         ])->actions([
-            ViewAction::make(), EditAction::make(), DeleteAction::make()
-        ]);
+            Action::make('move')
+                ->action(fn(Resident $resident) => $resident->update(['type', 'male']))
+                ->icon('heroicon-o-user-plus')
+                ->label('نقل'),
+            ViewAction::make(),
+            EditAction::make(),
+            RestoreAction::make(),
+            DeleteAction::make()->form([
+                TextInput::make('deletion_reason')->required()->label('سبب الحذف'),
+                DateTimePicker::make('deleted_at')->required()->label('تاريخ الحذف')->default(now()),
+            ])->action(function (array $data, Resident $record) {
+                $record->update($data);
+                $record->delete();
+            }),
+        ])->filters([
+            TrashedFilter::make(),
+
+            TernaryFilter::make('ability_to_external_visit')->label('القدرة علي الزيارة الخارجية'),
+
+            SelectFilter::make('mental_disability_degree')->label('مستوي الاعاقة')->options(Resident::METAL_DEGREE),
+
+            SelectFilter::make('healthProblems')
+                ->label('المشاكل الصحية')
+                ->searchable()
+                ->preload()
+                ->multiple()
+                ->relationship('healthProblems', 'name'),
+
+            SelectFilter::make('city')->relationship('city', 'name')->multiple(),
+
+            SelectFilter::make('building')->label('المبني')->options(Resident::FEMALE_BUILDINGS),
+
+        ])->filtersFormColumns(2)->striped();
     }
 
     public static function getPages(): array

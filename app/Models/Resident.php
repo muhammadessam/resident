@@ -6,6 +6,7 @@ use App\Traits\InteractsWithSoftCascadedRelation;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -19,6 +20,7 @@ class Resident extends Model implements HasMedia
     use SoftDeletes;
     use InteractsWithMedia;
     use InteractsWithSoftCascadedRelation;
+    use HasFactory;
 
     protected static array $relations_to_cascade = ['visits', 'relatives'];
 
