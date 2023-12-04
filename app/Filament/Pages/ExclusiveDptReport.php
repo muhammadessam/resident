@@ -4,6 +4,8 @@ namespace App\Filament\Pages;
 
 use App\Exports\ExclusiveReportExport;
 use App\Models\Resident;
+use App\TCPDFHelper\VisitTCPDF;
+use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Concerns\InteractsWithInfolists;
@@ -41,13 +43,9 @@ class ExclusiveDptReport extends Page implements HasTable, HasInfolists
         return $table
             ->query(Resident::query())
             ->columns([
-                TextColumn::make('name')->label('اسم المقييم'),
-                TextColumn::make('internal_visits_count')
-                    ->label('عدد الزيارات الداخلية')
-                    ->counts('internalVisits'),
-                TextColumn::make('external_visits_count')
-                    ->label('عدد الزيارات الخارجية')
-                    ->counts('externalVisits'),
+                TextColumn::make('name')->label('اسم المقييم')->sortable(),
+                TextColumn::make('internal_visits_count')->label('عدد الزيارات الداخلية')->counts('internalVisits'),
+                TextColumn::make('external_visits_count')->label('عدد الزيارات الخارجية')->counts('externalVisits'),
                 TextColumn::make('last_visit_date')
                     ->state(function (Resident $record) {
                         return $record->visits()->latest()->first()->date_time ?? '';
@@ -87,17 +85,25 @@ class ExclusiveDptReport extends Page implements HasTable, HasInfolists
 
             ])->bulkActions([
                 BulkAction::make('selected_to_pdf')->label('تصدير المحدد PDF')->action(function ($records) {
-                    return Excel::download(new ExclusiveReportExport($records), 'new.pdf');
+                    $file_path = public_path(Carbon::now()->toDateString() . '.pdf');
+                    $pdf = new VisitTCPDF();
+                    $pdf->setupTableHeaders($this->table->getColumns());
+                    $pdf->coloredTable($records, file_path: $file_path);
+                    return response()->download($file_path)->deleteFileAfterSend();
                 }),
                 BulkAction::make('selected_to_excel')->label('تصدير المحدد EXCEL')->action(function ($records) {
-
+                    return Excel::download(new ExclusiveReportExport($records), now() . '.xlsx',);
                 }),
             ])->headerActions([
                 Action::make('all_to_pdf')->label('تصدير الكل PDF')->action(function ($livewire) {
-
+                    $file_path = public_path(Carbon::now()->toDateString() . '.pdf');
+                    $pdf = new VisitTCPDF();
+                    $pdf->setupTableHeaders($this->table->getColumns());
+                    $pdf->coloredTable($this->getFilteredTableQuery()->with('visits')->get(), file_path: $file_path);
+                    return response()->download($file_path)->deleteFileAfterSend();
                 }),
                 Action::make('all_to_excel')->label('تصدير الكل EXCEL')->action(function ($livewire) {
-
+                    return Excel::download(new ExclusiveReportExport($this->getFilteredTableQuery()->get()), now()->toDateString() . '.xlsx');
                 }),
             ])->headerActionsPosition(HeaderActionsPosition::Bottom);
     }
