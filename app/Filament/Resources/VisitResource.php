@@ -17,6 +17,7 @@ use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Wizard;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
@@ -54,7 +55,10 @@ class VisitResource extends Resource
                 ->relationship('resident', 'name')
                 ->searchable()
                 ->live()
-                ->preload(),
+                ->afterStateUpdated(function ($state) {
+                    $resident = Resident::find($state);
+                    $ext_visits = $resident->externalVisits()->whereDate('date_time', '<=',);
+                })->preload(),
 
             Select::make('relative_id')
                 ->label('القريب')
@@ -240,8 +244,7 @@ class VisitResource extends Resource
                 })
         ])->actions([
             ViewAction::make(), EditAction::make(), DeleteAction::make()
-        ])
-            ;
+        ]);
     }
 
     public static function getPages(): array

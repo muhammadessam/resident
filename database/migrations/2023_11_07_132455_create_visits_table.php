@@ -18,6 +18,7 @@ return new class extends Migration {
             $table->unsignedTinyInteger('duration')->nullable()->default(null);
             $table->unsignedTinyInteger('companion_no');
             $table->timestamp('date_time');
+            $table->timestamp('end_date')->nullable()->default(null);
             $table->softDeletes();
             $table->timestamps();
         });

@@ -62,13 +62,12 @@ class RelativesRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('name')
             ->columns([
-                TextColumn::make('name')->searchable()->sortable(),
-                TextColumn::make('id_number')->searchable(),
-                TextColumn::make('phone1')->searchable(),
-                TextColumn::make('phone2')->searchable(),
-                TextColumn::make('phone3')->searchable(),
-                TextColumn::make('relation')
-                    ->label('صلة القرابة')
+                TextColumn::make('name')->searchable()->sortable()->label('الاسم'),
+                TextColumn::make('id_number')->searchable()->label('رقم الهوية'),
+                TextColumn::make('phone1')->searchable()->label('الهاتف 1'),
+                TextColumn::make('phone2')->searchable()->label('الهاتف 2'),
+                TextColumn::make('phone3')->searchable()->label('الهاتف 3'),
+                TextColumn::make('relation')->label('صلة القرابة')
                     ->formatStateUsing(fn(string $state) => array_key_exists($state, RelativeResident::RELATION) ? RelativeResident::RELATION[$state] : $state)
             ])
             ->filters([

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -28,6 +29,26 @@ class Visit extends Model
         'date_time',
         'companion_no',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (Visit $visit) {
+            if ($visit['type'] == 'internal') {
+                $visit->end_date = Carbon::parse($visit->date_time)->addHour();
+            } elseif ($visit->type == 'external') {
+                $visit->end_date = Carbon::parse($visit->date_time)->add($visit->duration_type, $visit->duration);
+            }
+        });
+        static::updating(function (Visit $visit) {
+            if ($visit->isDirty(['type', 'date_time'])) {
+                if ($visit['type'] == 'internal') {
+                    $visit->end_date = Carbon::parse($visit->date_time)->addHour();
+                } elseif ($visit->type == 'external') {
+                    $visit->end_date = Carbon::parse($visit->date_time)->add($visit->duration_type, $visit->duration);
+                }
+            }
+        });
+    }
 
     protected $casts = [
         'date_time' => 'datetime',
