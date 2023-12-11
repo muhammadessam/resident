@@ -25,6 +25,7 @@ class Resident extends Model implements HasMedia
 
     protected static array $relations_to_cascade = ['visits', 'relatives'];
 
+    protected $with = ['lastVisit'];
 
     const TYPE = [
         'male' => 'الذكور',
@@ -145,5 +146,10 @@ class Resident extends Model implements HasMedia
     public function city(): BelongsTo
     {
         return $this->belongsTo(City::class, 'city_id');
+    }
+
+    public function lastVisit(): HasOne
+    {
+        return $this->hasOne(Visit::class)->latestOfMany();
     }
 }

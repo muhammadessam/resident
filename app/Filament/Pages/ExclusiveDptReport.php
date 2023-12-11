@@ -4,7 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Exports\ExclusiveReportExport;
 use App\Models\Resident;
-use App\TCPDFHelper\VisitTCPDF;
+use App\TCPDFHelper\ExclusiveReport;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Infolists\Components\TextEntry;
@@ -86,7 +86,7 @@ class ExclusiveDptReport extends Page implements HasTable, HasInfolists
             ])->bulkActions([
                 BulkAction::make('selected_to_pdf')->label('تصدير المحدد PDF')->action(function ($records) {
                     $file_path = public_path(Carbon::now()->toDateString() . '.pdf');
-                    $pdf = new VisitTCPDF();
+                    $pdf = new ExclusiveReport();
                     $pdf->setupTableHeaders($this->table->getColumns());
                     $pdf->coloredTable($records, file_path: $file_path);
                     return response()->download($file_path)->deleteFileAfterSend();
@@ -97,7 +97,7 @@ class ExclusiveDptReport extends Page implements HasTable, HasInfolists
             ])->headerActions([
                 Action::make('all_to_pdf')->label('تصدير الكل PDF')->action(function ($livewire) {
                     $file_path = public_path(Carbon::now()->toDateString() . '.pdf');
-                    $pdf = new VisitTCPDF();
+                    $pdf = new ExclusiveReport();
                     $pdf->setupTableHeaders($this->table->getColumns());
                     $pdf->coloredTable($this->getFilteredTableQuery()->with('visits')->get(), file_path: $file_path);
                     return response()->download($file_path)->deleteFileAfterSend();

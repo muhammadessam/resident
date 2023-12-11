@@ -14,3 +14,4 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::redirect('/', '/admin');
+Route::get('generate-visit-form/{visit}', [\App\Http\Controllers\PdfController::class, 'index'])->middleware('auth')->name('generate-visit-form');

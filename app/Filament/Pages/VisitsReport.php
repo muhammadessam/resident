@@ -4,7 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Exports\VisitsExportTemplate20;
 use App\Models\Visit;
-use App\TCPDFHelper\VisitTCPDF;
+use App\TCPDFHelper\ExclusiveReport;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Pages\Page;

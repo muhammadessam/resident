@@ -112,7 +112,7 @@ class MaleResidentResource extends Resource
 
             TextColumn::make('last_visit_date')
                 ->state(function (Resident $record) {
-                    return $record->visits()->latest()->first()->date_time ?? '';
+                    return $record->lastVisit->date_time ?? '';
                 })
                 ->label('تاريخ اخر زيارة')
                 ->date('Y-m-d'),

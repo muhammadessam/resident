@@ -6,7 +6,7 @@ namespace App\TCPDFHelper;
 use Carbon\Carbon;
 use setasign\Fpdi\Tcpdf\Fpdi;
 
-class VisitTCPDF extends Fpdi
+class ExclusiveReport extends Fpdi
 {
     public array $table_headers = [];
     public array $columns_width = [];

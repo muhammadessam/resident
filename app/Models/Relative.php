@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Relative extends Model
 {
     use SoftDeletes, HasFactory;
+
     protected $fillable = [
         'name',
         'id_number',
@@ -18,6 +19,7 @@ class Relative extends Model
         'phone2',
         'phone3',
     ];
+    protected $with = ['residents'];
 
     public function residents(): BelongsToMany
     {

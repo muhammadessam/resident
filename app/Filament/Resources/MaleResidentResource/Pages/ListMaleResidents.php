@@ -10,7 +10,6 @@ class ListMaleResidents extends ListRecords
 {
     protected static string $resource = MaleResidentResource::class;
 
-
     protected function getActions(): array
     {
         return [
