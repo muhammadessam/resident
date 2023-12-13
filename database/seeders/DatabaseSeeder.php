@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
         $this->call(CitiesSeeder::class);
         Resident::factory(100)->create();
         Relative::factory(100)->create();
-        RelativeResident::factory(50)->create();
+        RelativeResident::factory(200)->create();
         Visit::factory(100)->create();
     }
 }

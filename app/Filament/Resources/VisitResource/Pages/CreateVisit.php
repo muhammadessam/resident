@@ -20,7 +20,9 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
+use JetBrains\PhpStorm\NoReturn;
 
 class CreateVisit extends CreateRecord
 {
@@ -36,156 +38,6 @@ class CreateVisit extends CreateRecord
         return $data;
     }
 
-    public function form(Form $form): Form
-    {
-        return $form->schema([
-            Select::make('resident_id')
-                ->label('المقييم')
-                ->required()
-                ->relationship('resident', 'name')
-                ->searchable()
-                ->live()
-                ->afterStateUpdated(function ($state) {
-                    $resident = Resident::find($state);
-                    $ext_visits = $resident->externalVisits()->whereDate('date_time', '<=',);
-                })->preload(),
-
-            Select::make('relative_id')
-                ->label('القريب')
-                ->required()
-                ->relationship('relative', 'name', function (Resident $builder, Get $get) {
-                    return $builder->where('id', $get('resident_id'))->first()->relatives();
-                })->live()
-                ->hidden(fn(Get $get) => !($get('resident_id') !== null))
-                ->preload()
-                ->searchable()
-                ->createOptionForm([
-                    TextInput::make('name')->required()->label('الاسم'),
-                    TextInput::make('id_number')->required()->unique('relatives', 'id_number', ignoreRecord: true)->label('رقم الهوية'),
-                    TextInput::make('phone1')->required()->label('الهاتف 1'),
-                    TextInput::make('phone2')->label('الهاتف 2'),
-                    TextInput::make('phone3')->label('الهاتف 3'),
-                    Select::make('relation')
-                        ->label('صلة القرابة')
-                        ->options(RelativeResident::RELATION)
-                        ->afterStateHydrated(function (Set $set, $state) {
-                            if (!array_key_exists($state, RelativeResident::RELATION)) {
-                                $set('other_relation', $state);
-                                $set('relation', 'other');
-                            }
-                        })->live(),
-                    TextInput::make('other_relation')->label('صلةالقرابة')->hidden(fn(Get $get) => $get('relation') !== 'other')->live(),
-                    Checkbox::make('is_guardian')->label('هل هذا القريب هو الوالي؟')
-                ])->createOptionUsing(function ($data, $model, $livewire, $get) {
-                    if ($data['relation'] == 'other') {
-                        $data['relation'] = $data['other_relation'];
-                    }
-                    Relative::create($data)->residents()->syncWithPivotValues($get('resident_id'), $data);
-                })->fillEditOptionActionFormUsing(function (Get $get) {
-                    $data = Relative::find($get('relative_id'))->only(['name', 'id_number', 'phone1', 'phone2', 'phone3']);
-                    $data = array_merge($data, RelativeResident::where('resident_id', $get('resident_id'))->where('relative_id', $get('relative_id'))
-                        ->first()->only(['relation', 'is_guardian']));
-                    $data['other_relation'] = $data['relation'];
-                    return $data;
-                })->editOptionForm([
-                    TextInput::make('name')->required()->label('الاسم'),
-                    TextInput::make('id_number')->required()->unique('relatives', 'id_number', ignoreRecord: true)->label('رقم الهوية'),
-                    TextInput::make('phone1')->required()->label('الهاتف 1'),
-                    TextInput::make('phone2')->label('الهاتف 2'),
-                    TextInput::make('phone3')->label('الهاتف 3'),
-                    Select::make('relation')
-                        ->label('صلة القرابة')
-                        ->options(RelativeResident::RELATION)
-                        ->afterStateHydrated(function (Set $set, $state) {
-                            if (!array_key_exists($state, RelativeResident::RELATION)) {
-                                $set('other_relation', $state);
-                                $set('relation', 'other');
-                            }
-                        })->live(),
-                    TextInput::make('other_relation')->label('صلةالقرابة')->hidden(fn(Get $get) => $get('relation') !== 'other')->live(),
-                    Checkbox::make('is_guardian')->label('هل هذا القريب هو الوالي؟')
-                ])->updateOptionUsing(function ($data, $get) {
-                    Relative::find($get('relative_id'))->update($data);
-                    if ($data['relation'] == 'other') {
-                        $data['relation'] = $data['other_relation'];
-                    }
-                    RelativeResident::where('resident_id', $get('resident_id'))->where('relative_id', $get('relative_id'))
-                        ->first()->update($data);
-                }),
-
-            Select::make('type')
-                ->label('نوع الزيارة')
-                ->required()
-                ->options(Visit::TYPE)->live(),
-
-            DateTimePicker::make('date_time')
-                ->label('تاريخ ووقت الزيارة')
-                ->default(now()),
-
-            TextInput::make('duration')
-                ->label('المدة')
-                ->required()
-                ->integer()
-                ->step(1)
-                ->default(1)
-                ->maxValue(90)
-                ->minValue(1)
-                ->hidden(fn(Get $get) => $get('type') != 'external'),
-
-            Select::make('duration_type')
-                ->label('المدة بالايام ام الساعات')
-                ->required()
-                ->options([
-                    'days' => 'يوم',
-                    'hours' => 'ساعة',
-                ])->hidden(fn(Get $get) => $get('type') != 'external'),
-
-
-            TextInput::make('companion_no')
-                ->label('عدد المرافقين')
-                ->numeric()
-                ->maxValue(9)
-                ->minValue(1)
-                ->default(1)
-                ->required(),
-
-            Fieldset::make('المعلومات الخاص بكل من المقيم والقريب')->schema([
-                Section::make('معلومات المقييم')
-                    ->hidden(fn(Get $get) => $get('resident_id') == null)
-                    ->schema([
-                        Placeholder::make('name')->label('الاسم:')->inlineLabel()->content(fn(Get $get) => Resident::find($get('resident_id'))->name),
-                        Placeholder::make('building')->label('المبني:')->inlineLabel()->content(fn(Get $get) => Resident::find($get('resident_id'))->building),
-                        Placeholder::make('external_visit_authorized')
-                            ->label('المصرح لهم بالزيارة الخارجية:')
-                            ->content(fn(Get $get) => Resident::find($get('resident_id'))->external_visit_authorized)
-                            ->inlineLabel(),
-                        Placeholder::make('internal_visit_authorized')
-                            ->label('المصرح لهم بالزيارة الداخلية:')
-                            ->inlineLabel()->content(fn(Get $get) => Resident::find($get('resident_id'))->internal_visit_authorized),
-
-                        Placeholder::make('notes')
-                            ->label('ملاحظات')
-                            ->content(fn(Get $get) => Resident::find($get('resident_id'))->notes)
-
-                    ])->columns(2)
-                    ->compact()
-                    ->columnSpan(1)
-                    ->collapsible(),
-
-                Section::make('معلومات القريب')
-                    ->hidden(fn(Get $get) => $get('relative_id') == null)
-                    ->schema([
-                        Placeholder::make('name')->label('الاسم:')->inlineLabel()->content(fn(Get $get) => Relative::find($get('relative_id'))->name),
-                        Placeholder::make('id_number')->label('رقم الهوية:')->inlineLabel()->content(fn(Get $get) => Relative::find($get('relative_id'))->id_number),
-                        Placeholder::make('phone1')->label('رقم الجوال')->content(fn(Get $get) => Relative::find($get('relative_id'))->phone1)
-                    ])->columnSpan(1)
-                    ->columns(1)
-                    ->compact()
-                    ->collapsible(),
-            ])->hidden(fn(Get $get) => ($get('relative_id') == null) and ($get('resident_id') == null))
-        ])->columns(2);
-    }
-
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');
@@ -196,12 +48,32 @@ class CreateVisit extends CreateRecord
         return array_merge([
             Action::make('pdf')->color('warning')->label('اضافة وطباعة')->icon('heroicon-o-printer')->action(function ($livewire) {
                 $this->validate();
+                $check_for_last_visit = Visit::where('resident_id', $livewire->data['resident_id'])
+                    ->where('type', 'external')
+                    ->whereDate('end_date', '>=', $livewire->data['date_time']);
+                if ($check_for_last_visit?->count()) {
+                    Notification::make()->danger()->title('المقيم في زيارة خارجية ')->body('المقييم المحدد بالفعل في زيارة خارجية')->persistent()->send();
+                    $this->halt();
+                }
                 $visit = $this->handleRecordCreation($this->mutateFormDataBeforeCreate($livewire->data));
                 $this->getCreatedNotification()->send();
                 return redirect()->route('generate-visit-form', [
                     'visit' => $visit
                 ]);
             })
-        ], parent::getFormActions());
+        ], parent::getFormActions()
+        );
+    }
+
+    protected function beforeCreate(): void
+    {
+        $check_for_last_visit = Visit::where('resident_id', $this->data['resident_id'])
+            ->where('type', 'external')
+            ->whereDate('end_date', '>=', $this->data['date_time']);
+
+        if ($check_for_last_visit?->count()) {
+            Notification::make()->danger()->title('المقيم في زيارة خارجية ')->body('المقييم المحدد بالفعل في زيارة خارجية')->persistent()->send();
+            $this->halt();
+        }
     }
 }

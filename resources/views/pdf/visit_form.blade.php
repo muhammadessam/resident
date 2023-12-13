@@ -8,7 +8,7 @@
     <style>
         body {
             font-family: 'arial', sans-serif;
-            line-height: 0px !important;
+            line-height: 0 !important;
             font-size: 18px;
         }
 
@@ -19,26 +19,6 @@
 
         .text-center {
             text-align: center;
-        }
-
-        .font-bold {
-            font-weight: bold;
-        }
-
-        .text-right {
-            text-align: right;
-        }
-
-        .text-left {
-            text-align: left;
-        }
-
-        .w-6 {
-            width: 50%;
-        }
-
-        .w-full {
-            width: 100%
         }
 
         .w-half {
@@ -70,7 +50,7 @@
             .
         }
     </style>
-    <style type="text/css">
+    <style>
         .tg {
             border-collapse: collapse;
             border-spacing: 0;
@@ -98,22 +78,6 @@
             word-break: normal;
         }
 
-        .tg .tg-zkl2 {
-            border-color: inherit;
-            font-size: 18px;
-            font-weight: bold;
-            text-align: left;
-            vertical-align: top
-        }
-
-        .tg .tg-ofrg {
-            border-color: inherit;
-            font-family: "Arial Black", Gadget, sans-serif !important;
-            font-size: 18px;
-            font-weight: bold;
-            text-align: left;
-            vertical-align: middle
-        }
 
         .tg .tg-eqm3 {
             border-color: inherit;
@@ -131,7 +95,7 @@
 <table style="width: 100%;">
     <tr>
         <td class="border-none">
-            <img width="150" height="75" src="{{public_path('logo.png')}}">
+            <img width="150" height="75" src="{{public_path('logo.png')}}" alt="logo">
         </td>
         <td class="border-none" style="text-align: left">
             {{'الرقم المرجعي للزيارة: ' . $ar->arNormalizeText(str_pad($visit->id, '5', '0', STR_PAD_LEFT), 'Hindu')}}
@@ -161,7 +125,7 @@
         <td class="text-center border w-twenty bg-gray">وقت الزيارة</td>
         <td class="text-center border w-thirty">{{$ar->arNormalizeText($ar->date('h:i a', $visit->date_time->timestamp), 'Hindu')}}</td>
         <td class="text-center border w-twenty bg-gray">مدة الزيارة</td>
-        <td class="text-center border w-thirty">{{$ar->arNormalizeText($visit->duration . ' ' . \App\Models\Visit::DURATION_TYPE[$visit->duration_type], 'Hindu')}}</td>
+        <td class="text-center border w-thirty">{{$visit->type=='internal'?  $ar->arNormalizeText($visit->duration . ' ' . \App\Models\Visit::DURATION_TYPE[$visit->duration_type], 'Hindu'):''}}</td>
     </tr>
     <tr>
         <td class="text-center border w-twenty bg-gray">اسم مسجل البيانات</td>
@@ -203,7 +167,7 @@
     </tr>
     <tr>
         <td class="tg-eqm3 bg-gray">تاريخ اخر زيارة</td>
-        <td class="tg-eqm3">{{$ar->arNormalizeText(App\Models\Visit::where('resident_id', $visit->resident_id)->where('relative_id', $visit->relative_id)->latest('date_time')->skip(1)->first()->date_time->format('Y/m/d'), 'Hindu')}}</td>
+        <td class="tg-eqm3">{{$ar->arNormalizeText(($last_visit? :$visit)->date_time->format('Y/m/d'), 'Hindu')}}</td>
         <td class="tg-eqm3 bg-gray">مدي تواصل الاسرة</td>
         <td class="tg-eqm3"></td>
     </tr>
