@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Mpdf\Tag\B;
 
 class Visit extends Model
 {
@@ -62,5 +64,15 @@ class Visit extends Model
     public function relative(): BelongsTo
     {
         return $this->belongsTo(Relative::class, 'relative_id');
+    }
+
+    public function scopeExternal(Builder $builder): void
+    {
+        $builder->where('type', 'external');
+    }
+
+    public function scopeInternal(Builder $builder): void
+    {
+        $builder->where('type', 'internal');
     }
 }
