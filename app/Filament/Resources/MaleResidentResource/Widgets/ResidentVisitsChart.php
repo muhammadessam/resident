@@ -15,6 +15,7 @@ class ResidentVisitsChart extends ChartWidget
     public ?Resident $record = null;
     protected static ?string $maxHeight = '300px';
     public ?string $filter = '';
+    protected static ?string $pollingInterval = '30s';
 
     protected function getFilterInfo(): array
     {

@@ -16,7 +16,7 @@ class VisitsCountWidget extends ChartWidget
 
     protected static ?int $sort = 3;
     public ?string $filter = 'year';
-
+    protected static ?string $pollingInterval = '30s';
     protected function getFilterInfo(): array
     {
         return [

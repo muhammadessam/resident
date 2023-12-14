@@ -3,30 +3,26 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Resident;
+use App\Models\Visit;
 use Filament\Support\RawJs;
 use Filament\Widgets\ChartWidget;
 
-class ResidentCountWidget extends ChartWidget
+class VisitsCountPieWidget extends ChartWidget
 {
-    protected static ?string $heading = 'عدد المقيمين والمقيمات';
-    protected static string $color = 'info';
-    protected static ?string $pollingInterval = '30s';
-    protected static ?string $maxHeight = '300px';
-
+    protected static ?string $heading = 'عدد الزيارات الداخلية والخارجية';
     protected static ?int $sort = 2;
-    protected int|string|array $columnSpan = 1;
+    protected static ?string $maxHeight = '300px';
 
     protected function getData(): array
     {
         return [
             'datasets' => [
                 [
-                    'data' => [Resident::male()->count(), Resident::female()->count()],
+                    'data' => [Visit::internal()->count(), Visit::external()->count()],
                     'backgroundColor' => ['#205bb6', '#205bf6'],
                 ],
             ],
-            'labels' => ['عدد الذكور', 'عدد الاناث'],
-
+            'labels' => ['عدد الزيارات الداخلية', 'عدد الزيارات الخارجية'],
         ];
     }
 
@@ -62,6 +58,6 @@ class ResidentCountWidget extends ChartWidget
 
     protected function getType(): string
     {
-        return 'doughnut';
+        return 'pie';
     }
 }
