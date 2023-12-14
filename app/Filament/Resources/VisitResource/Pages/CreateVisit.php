@@ -52,7 +52,7 @@ class CreateVisit extends CreateRecord
                     ->where('type', 'external')
                     ->whereDate('end_date', '>=', $livewire->data['date_time']);
                 if ($check_for_last_visit?->count()) {
-                    Notification::make()->danger()->title('المقيم في زيارة خارجية ')->body('المقييم المحدد بالفعل في زيارة خارجية')->persistent()->send();
+                    Notification::make()->danger()->title('المقيم في زيارة خارجية ')->body('عفواً هذا المقيم حالياً في زيارة خارجية')->persistent()->send();
                     $this->halt();
                 }
                 $visit = $this->handleRecordCreation($this->mutateFormDataBeforeCreate($livewire->data));
@@ -72,7 +72,7 @@ class CreateVisit extends CreateRecord
             ->whereDate('end_date', '>=', $this->data['date_time']);
 
         if ($check_for_last_visit?->count()) {
-            Notification::make()->danger()->title('المقيم في زيارة خارجية ')->body('المقييم المحدد بالفعل في زيارة خارجية')->persistent()->send();
+            Notification::make()->danger()->title('المقيم في زيارة خارجية ')->body('عفواً هذا المقيم حالياً في زيارة خارجية')->persistent()->send();
             $this->halt();
         }
     }
