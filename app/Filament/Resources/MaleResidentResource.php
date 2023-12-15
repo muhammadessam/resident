@@ -66,7 +66,7 @@ class MaleResidentResource extends Resource
 
             Select::make('city')->label('المدينة')->relationship('city', 'name')->preload()->searchable()->required(),
 
-            Select::make('mental_disability_degree')->label('درجة الاعاقة')->options(Resident::METAL_DEGREE)->required(),
+            Select::make('mental_disability_degree')->label('مستوي الاعاقة')->options(Resident::METAL_DEGREE)->required(),
 
             Textarea::make('external_visit_authorized')->label('المصرح لهم بالزياة الخارجية'),
 
@@ -137,7 +137,8 @@ class MaleResidentResource extends Resource
 
             TernaryFilter::make('ability_to_external_visit')->label('القدرة علي الزيارة الخارجية'),
 
-            SelectFilter::make('mental_disability_degree')->label('مستوي الاعاقة')->options(Resident::METAL_DEGREE),
+            SelectFilter::make('mental_disability_degree')
+                ->label('مستوي الاعاقة')->options(Resident::METAL_DEGREE)->preload(),
 
             SelectFilter::make('healthProblems')
                 ->label('المشاكل الصحية')

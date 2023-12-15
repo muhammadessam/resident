@@ -34,6 +34,7 @@ class CreateVisit extends CreateRecord
         if ($data['type'] == 'internal') {
             $data['duration_type'] = 'hours';
             $data['duration'] = 1;
+            $data['created_by'] = auth()->id();
         }
         return $data;
     }

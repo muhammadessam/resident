@@ -30,6 +30,8 @@ class Visit extends Model
         'duration',
         'date_time',
         'companion_no',
+        'created_by',
+        'end_date'
     ];
 
     protected static function booted(): void

@@ -202,7 +202,8 @@ class VisitResource extends Resource
     {
         return $table->columns([
 
-            TextColumn::make('resident.number')->label('رقم المستفيد')->searchable(),
+            TextColumn::make('resident.number')->label('رقم المستفيد')
+                ->formatStateUsing(fn($state, Arabic $arabic) => $arabic->arNormalizeText($state, 'Hindu'))->searchable(),
 
             TextColumn::make('resident.name')->label('المقيم')->searchable(),
 

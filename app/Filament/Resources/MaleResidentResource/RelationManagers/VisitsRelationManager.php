@@ -167,7 +167,9 @@ class VisitsRelationManager extends RelationManager
                 TextColumn::make('companion_no')->label('عدد المرافقين'),
             ])
             ->filters([
-                //
+                Tables\Filters\TrashedFilter::make()->hidden(function () {
+                    return !$this->getOwnerRecord()->deleted_at;
+                })->default(0),
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make(),

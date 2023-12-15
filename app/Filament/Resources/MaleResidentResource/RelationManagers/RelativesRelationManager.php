@@ -71,7 +71,9 @@ class RelativesRelationManager extends RelationManager
                     ->formatStateUsing(fn(string $state) => array_key_exists($state, RelativeResident::RELATION) ? RelativeResident::RELATION[$state] : $state)
             ])
             ->filters([
-                //
+                Tables\Filters\TrashedFilter::make()->hidden(function () {
+                    return !$this->getOwnerRecord()->deleted_at;
+                })->default(0),
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()->mutateFormDataUsing(function ($data) {
@@ -108,6 +110,7 @@ class RelativesRelationManager extends RelationManager
                     return $data;
                 }),
                 Tables\Actions\DetachAction::make(),
+                Tables\Actions\RestoreAction::make(),
 //                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
