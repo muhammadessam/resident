@@ -28,8 +28,6 @@ class VisitFactory extends Factory
 
             'resident_id' => $resident->id,
             'relative_id' => $this->faker->randomElement($relatives_id),
-
-            'created_by' => 1,
         ];
     }
 }
