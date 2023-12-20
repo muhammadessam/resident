@@ -8,6 +8,7 @@ use App\Filament\Resources\MaleResidentResource\RelationManagers\ResidentialRela
 use App\Filament\Resources\MaleResidentResource\RelationManagers\VisitsRelationManager;
 use App\Filament\Resources\MaleResidentResource\Widgets\ResidentVisitsChart;
 use App\Models\Resident;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;

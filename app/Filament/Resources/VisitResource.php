@@ -54,9 +54,8 @@ class VisitResource extends Resource
                 ->relationship('resident', 'name')
                 ->searchable()
                 ->live()
-                ->afterStateUpdated(function ($state) {
-                    $resident = Resident::find($state);
-                    $ext_visits = $resident->externalVisits()->whereDate('date_time', '<=',);
+                ->afterStateUpdated(function ($state, $set) {
+                    $set('relative_id', null);
                 })->preload(),
 
             Select::make('relative_id')

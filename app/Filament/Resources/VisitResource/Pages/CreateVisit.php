@@ -10,6 +10,7 @@ use App\Models\Visit;
 use App\TCPDFHelper\VisitsForm;
 use ArPHP\I18N\Arabic;
 use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Fieldset;
@@ -34,8 +35,9 @@ class CreateVisit extends CreateRecord
         if ($data['type'] == 'internal') {
             $data['duration_type'] = 'hours';
             $data['duration'] = 1;
-            $data['created_by'] = auth()->id();
         }
+        $data['created_by'] = Filament::auth()->id();
+
         return $data;
     }
 

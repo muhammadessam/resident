@@ -111,15 +111,15 @@ class FemaleResidentResource extends Resource
 
             TextColumn::make('last_visit_date')
                 ->state(function (Resident $record) {
-                    return $record->visits()->latest()->first()->date_time ?? '';
+                    return $record->lastVisit->date_time ?? '';
                 })
                 ->label('تاريخ اخر زيارة')
                 ->date('Y-m-d'),
 
         ])->actions([
             Action::make('move')
-                ->action(fn(Resident $resident) => $resident->update(['type', 'male']))
-                ->icon('heroicon-o-user-plus')
+                ->action(fn(Resident $resident) => $resident->update(['type', 'female']))
+                ->icon('heroicon-o-user-minus')
                 ->label('نقل'),
             ViewAction::make(),
             EditAction::make(),
@@ -136,7 +136,8 @@ class FemaleResidentResource extends Resource
 
             TernaryFilter::make('ability_to_external_visit')->label('القدرة علي الزيارة الخارجية'),
 
-            SelectFilter::make('mental_disability_degree')->label('مستوي الاعاقة')->options(Resident::METAL_DEGREE),
+            SelectFilter::make('mental_disability_degree')
+                ->label('مستوي الاعاقة')->options(Resident::METAL_DEGREE)->preload(),
 
             SelectFilter::make('healthProblems')
                 ->label('المشاكل الصحية')
@@ -147,11 +148,10 @@ class FemaleResidentResource extends Resource
 
             SelectFilter::make('city')->relationship('city', 'name')->multiple(),
 
-            SelectFilter::make('building')->label('المبني')->options(Resident::FEMALE_BUILDINGS),
+            SelectFilter::make('building')->label('المبني')->options(Resident::MALE_BUILDINGS),
 
         ])->filtersFormColumns(2)->striped();
     }
-
     public static function getPages(): array
     {
         return [
