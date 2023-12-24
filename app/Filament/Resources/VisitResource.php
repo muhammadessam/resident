@@ -212,12 +212,12 @@ class VisitResource extends Resource
 
             TextColumn::make('relative.phone1')->label('رقم الجوال')->searchable(),
 
-
             TextColumn::make('type')->label('نوع الزيارة')->formatStateUsing(fn(Visit $visit) => Visit::TYPE[$visit->type]),
 
             TextColumn::make('duration')->label('مدة الزيارة')->formatStateUsing(fn(Visit $visit) => $visit->duration . ' ' . Visit::DURATION_TYPE[$visit->duration_type]),
 
-            TextColumn::make('date_time')->label('وقت الزيارة'),
+            TextColumn::make('date_time')->label('تاريخ الزيارة')->date('Y-m-d'),
+            TextColumn::make('time')->state(fn(Visit $record) => $record->date_time)->time('h:i A')->label('وقت الزيارة'),
 
             TextColumn::make('id')->label('الرقم المرجعي')->formatStateUsing(function ($state, Arabic $arabic) {
                 return $arabic->arNormalizeText(str_pad($state, '5', '0', STR_PAD_LEFT), 'Hindu');
@@ -264,14 +264,14 @@ class VisitResource extends Resource
                     }
                     return $indicator;
                 })
-        ])->actions([
+        ])->actions(ActionGroup::make([
             Action::make('print')
                 ->label('طباعة')
                 ->icon('heroicon-o-printer')
                 ->color('warning')
                 ->url(fn(Visit $record) => route('generate-visit-form', $record))->openUrlInNewTab(),
             ViewAction::make(), EditAction::make(), DeleteAction::make(),
-        ])->defaultSort('id', 'desc');
+        ]))->defaultSort('id', 'desc');
     }
 
     public static function getPages(): array
@@ -280,6 +280,7 @@ class VisitResource extends Resource
             'index' => Pages\ListVisits::route('/'),
             'create' => Pages\CreateVisit::route('/create'),
             'edit' => Pages\EditVisit::route('/{record}/edit'),
+            'view' => Pages\ViewVisit::route('/{record}')
         ];
     }
 
