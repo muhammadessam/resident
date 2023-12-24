@@ -320,6 +320,10 @@
         <td class="tg-eqm3">&nbsp;</td>
     </tr>
 </table>
-
+<table style="width: 100%">
+    <tr class="text-center">
+        <td><img src="{{public_path('footer.jpg')}}" alt=""></td>
+    </tr>
+</table>
 </body>
 </html>

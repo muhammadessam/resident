@@ -169,6 +169,6 @@ class Resident extends Model implements HasMedia
 
     public function lastVisit(): HasOne
     {
-        return $this->hasOne(Visit::class)->latestOfMany();
+        return $this->hasOne(Visit::class, 'resident_id')->latestOfMany('date_time');
     }
 }

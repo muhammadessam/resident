@@ -20,6 +20,7 @@ class RelativeResident extends Pivot
         'uncle' => 'عم',
         'aunt' => 'عمة',
         'grand' => 'جد',
+        'granny' => 'جدة',
         'other' => 'غير ذلك'
     ];
     public $timestamps = true;

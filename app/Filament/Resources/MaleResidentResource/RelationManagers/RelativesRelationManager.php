@@ -68,7 +68,9 @@ class RelativesRelationManager extends RelationManager
                 TextColumn::make('phone2')->searchable()->label('الهاتف 2'),
                 TextColumn::make('phone3')->searchable()->label('الهاتف 3'),
                 TextColumn::make('relation')->label('صلة القرابة')
-                    ->formatStateUsing(fn(string $state) => array_key_exists($state, RelativeResident::RELATION) ? RelativeResident::RELATION[$state] : $state)
+                    ->formatStateUsing(fn(string $state) => array_key_exists($state, RelativeResident::RELATION) ? RelativeResident::RELATION[$state] : $state),
+                Tables\Columns\IconColumn::make('is_guardian')->boolean()->label('الوالي'),
+
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make()->hidden(function () {

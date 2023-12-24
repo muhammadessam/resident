@@ -65,7 +65,7 @@ class MaleResidentResource extends Resource
 
             Select::make('building')->label('المبني')->options(Resident::MALE_BUILDINGS)->required(),
 
-            Select::make('city')->label('المدينة')->relationship('city', 'name')->preload()->searchable()->required(),
+            Select::make('city_id')->label('المدينة')->relationship('city', 'name')->preload()->searchable()->required(),
 
             Select::make('mental_disability_degree')->label('مستوي الاعاقة')->options(Resident::METAL_DEGREE)->required(),
 
@@ -105,23 +105,18 @@ class MaleResidentResource extends Resource
 
             TextColumn::make('age')->label('العمر')->sortable(['dob'])->formatStateUsing(fn($state) => $state . ' سنة '),
 
-            TextColumn::make('building')->label('المبني'),
+            TextColumn::make('building')->label('المبني')->sortable(),
 
-            TextColumn::make('internal_visits_count')->label('عدد الزيارات الداخلية')->counts('internalVisits'),
+            TextColumn::make('internal_visits_count')->label('عدد الزيارات الداخلية')->counts('internalVisits')->sortable(),
 
-            TextColumn::make('external_visits_count')->label('عدد الزيارات الخارجية')->counts('externalVisits'),
+            TextColumn::make('external_visits_count')->label('عدد الزيارات الخارجية')->counts('externalVisits')->sortable(),
 
-            TextColumn::make('last_visit_date')
-                ->state(function (Resident $record) {
-                    return $record->lastVisit->date_time ?? '';
-                })
-                ->label('تاريخ اخر زيارة')
-                ->date('Y-m-d'),
+            TextColumn::make('lastVisit.date_time')->sortable()->label('تاريخ اخر زيارة')->date('Y-m-d'),
 
         ])->actions([
             Action::make('move')
-                ->action(fn(Resident $resident) => $resident->update(['type', 'female']))
-                ->icon('heroicon-o-user-minus')
+                ->action(action: fn(Resident $record) => $record->update(['type' => 'female']))
+                ->icon('heroicon-o-user-minus')->requiresConfirmation(true)
                 ->label('نقل'),
             ViewAction::make(),
             EditAction::make(),

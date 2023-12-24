@@ -53,6 +53,7 @@ class FemaleResidentResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
+
             TextInput::make('name')->label('الاسم')->required(),
 
             TextInput::make('number')->label('رقم المستفيد')->required()->unique('residents', 'number', ignoreRecord: true),
@@ -63,7 +64,7 @@ class FemaleResidentResource extends Resource
 
             Select::make('building')->label('المبني')->options(Resident::FEMALE_BUILDINGS)->required(),
 
-            Select::make('city')->label('المدينة')->relationship('city', 'name')->preload()->searchable()->required(),
+            Select::make('city_id')->label('المدينة')->relationship('city', 'name')->preload()->searchable()->required(),
 
             Select::make('mental_disability_degree')->label('درجة الاعاقة')->options(Resident::METAL_DEGREE)->required(),
 
@@ -109,17 +110,12 @@ class FemaleResidentResource extends Resource
 
             TextColumn::make('external_visits_count')->label('عدد الزيارات الخارجية')->counts('externalVisits'),
 
-            TextColumn::make('last_visit_date')
-                ->state(function (Resident $record) {
-                    return $record->lastVisit->date_time ?? '';
-                })
-                ->label('تاريخ اخر زيارة')
-                ->date('Y-m-d'),
+            TextColumn::make('lastVisit.date_time')->label('تاريخ اخر زيارة')->date('Y-m-d'),
 
         ])->actions([
             Action::make('move')
-                ->action(fn(Resident $resident) => $resident->update(['type', 'female']))
-                ->icon('heroicon-o-user-minus')
+                ->action(action: fn(Resident $record) => $record->update(['type' => 'male']))
+                ->icon('heroicon-o-user-minus')->requiresConfirmation(true)
                 ->label('نقل'),
             ViewAction::make(),
             EditAction::make(),
@@ -152,6 +148,7 @@ class FemaleResidentResource extends Resource
 
         ])->filtersFormColumns(2)->striped();
     }
+
     public static function getPages(): array
     {
         return [
