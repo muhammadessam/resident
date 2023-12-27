@@ -44,12 +44,22 @@ class Visit extends Model
             }
         });
         static::updating(function (Visit $visit) {
-            if ($visit->isDirty(['type', 'date_time'])) {
+            if ($visit->isDirty(['type', 'date_time', 'duration_type', 'duration'])) {
                 if ($visit['type'] == 'internal') {
                     $visit->end_date = Carbon::parse($visit->date_time)->addHour();
                 } elseif ($visit->type == 'external') {
                     $visit->end_date = Carbon::parse($visit->date_time)->add($visit->duration_type, $visit->duration);
                 }
+            }
+            if ($visit->isDirty('end_date')) {
+                $duration = $visit->end_date->diffInDays($visit->date_time);
+                if ($duration) {
+                    $visit->duration = $duration;
+                    $visit->duration_type = 'days';
+                } else {
+                    $visit->duration = $visit->end_date->diffInHours($visit->date_time);
+                    $visit->duration_type = 'hours';
+                };
             }
         });
     }
