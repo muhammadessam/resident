@@ -38,13 +38,9 @@ class ViewMaleResident extends ViewRecord
                 TextEntry::make('external_visit_authorized')->label('المصرح لهم بالزيارة الخارجية:')->inlineLabel(),
                 TextEntry::make('internal_visit_authorized')->label('المصرح لهم بالزيارة الداخلية:')->inlineLabel(),
                 TextEntry::make('deletion_reason')->label('سبب الحذف:')->inlineLabel()->hidden(fn(Resident $resident) => is_null($resident->deleted_at)),
-            ])->columns(2),
-
-            Section::make('المرفقات')->schema([
                 SpatieMediaLibraryImageEntry::make('visit_allow_report')->label('استمارة تصريح الزيارة:')->collection('visit_allow_report'),
                 SpatieMediaLibraryImageEntry::make('uploads')->label('مرفقات اخري:')->collection('uploads'),
             ])->columns(2),
-
         ]);
     }
 }

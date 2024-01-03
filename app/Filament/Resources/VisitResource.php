@@ -217,6 +217,7 @@ class VisitResource extends Resource
             TextColumn::make('duration')->label('مدة الزيارة')->formatStateUsing(fn(Visit $visit) => $visit->duration . ' ' . Visit::DURATION_TYPE[$visit->duration_type]),
 
             TextColumn::make('date_time')->label('تاريخ الزيارة')->date('Y-m-d'),
+
             TextColumn::make('time')->state(fn(Visit $record) => $record->date_time)->time('h:i A')->label('وقت الزيارة'),
 
             TextColumn::make('id')->label('الرقم المرجعي')->formatStateUsing(function ($state, Arabic $arabic) {

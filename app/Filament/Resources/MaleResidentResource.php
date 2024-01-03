@@ -8,7 +8,6 @@ use App\Filament\Resources\MaleResidentResource\RelationManagers\ResidentialRela
 use App\Filament\Resources\MaleResidentResource\RelationManagers\VisitsRelationManager;
 use App\Filament\Resources\MaleResidentResource\Widgets\ResidentVisitsChart;
 use App\Models\Resident;
-use Filament\Facades\Filament;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
@@ -19,6 +18,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\RestoreAction;
@@ -42,7 +42,9 @@ class MaleResidentResource extends Resource
     protected static ?string $label = 'مقيم ذكر';
 
     protected static ?string $pluralLabel = 'المقيمين الذكور';
+
     protected static ?int $navigationSort = 1;
+
     protected static ?string $navigationIcon = 'heroicon-o-user-plus';
 
     protected static ?string $navigationLabel = 'قسم الذكور';
@@ -113,12 +115,18 @@ class MaleResidentResource extends Resource
 
             TextColumn::make('lastVisit.date_time')->sortable()->label('تاريخ اخر زيارة')->date('Y-m-d'),
 
-        ])->actions([
+        ])->actions(ActionGroup::make([
             Action::make('move')
                 ->action(action: fn(Resident $record) => $record->update(['type' => 'female']))
                 ->icon('heroicon-o-user-minus')->requiresConfirmation(true)
                 ->label('نقل'),
             ViewAction::make(),
+            Action::make('visits_report')->label('عرض تقرير الزيارات')
+                ->icon('heroicon-m-document-chart-bar')
+                ->url(fn($record) => MaleResidentResource::getUrl('visit_report', ['record' => $record])),
+            Action::make('relative_report')->label('عرض تقرير الاقارب')
+                ->icon('heroicon-s-document-text')
+                ->url(fn(Resident $record) => $record->name),
             EditAction::make(),
             RestoreAction::make(),
             DeleteAction::make()->form([
@@ -128,7 +136,7 @@ class MaleResidentResource extends Resource
                 $record->update($data);
                 $record->delete();
             }),
-        ])->filters([
+        ]))->filters([
             TrashedFilter::make(),
 
             TernaryFilter::make('ability_to_external_visit')->label('القدرة علي الزيارة الخارجية'),
@@ -157,6 +165,8 @@ class MaleResidentResource extends Resource
             'create' => Pages\CreateMaleResident::route('/create'),
             'view' => Pages\ViewMaleResident::route('/{record}'),
             'edit' => Pages\EditMaleResident::route('/{record}/edit'),
+            'visit_report' => Pages\ResidentVisitsReport::route('{record}/visits-report'),
+            'relative_report' => Pages\ResidentRelativesReport::route('{record}/relatives-report'),
         ];
     }
 

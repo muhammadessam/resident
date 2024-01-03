@@ -24,16 +24,17 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Maatwebsite\Excel\Facades\Excel;
 
-class ExclusiveDptReport extends Page implements HasTable, HasInfolists
+class ExclusiveDptReport extends Page implements HasInfolists, HasTable
 {
-    use InteractsWithTable;
     use InteractsWithInfolists;
-
+    use InteractsWithTable;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
     protected static string $view = 'filament.pages.exclusive-dpt-report';
+
     protected static ?string $navigationGroup = 'التقارير';
+
     protected static ?string $title = 'تقرير شامل للقسم';
 
     protected static ?string $navigationLabel = 'تقرير شامل للقسم';
@@ -80,8 +81,9 @@ class ExclusiveDptReport extends Page implements HasTable, HasInfolists
                         if ($data['until']) {
                             $indicator .= ' الي: ' . $data['until'];
                         }
+
                         return $indicator;
-                    })
+                    }),
 
             ])->bulkActions([
                 BulkAction::make('selected_to_pdf')->label('تصدير المحدد PDF')->action(function ($records) {
@@ -89,10 +91,11 @@ class ExclusiveDptReport extends Page implements HasTable, HasInfolists
                     $pdf = new ExclusiveReport();
                     $pdf->setupTableHeaders($this->table->getColumns());
                     $pdf->coloredTable($records, file_path: $file_path);
+
                     return response()->download($file_path)->deleteFileAfterSend();
                 }),
                 BulkAction::make('selected_to_excel')->label('تصدير المحدد EXCEL')->action(function ($records) {
-                    return Excel::download(new ExclusiveReportExport($records), now() . '.xlsx',);
+                    return Excel::download(new ExclusiveReportExport($records), now() . '.xlsx');
                 }),
             ])->headerActions([
                 Action::make('all_to_pdf')->label('تصدير الكل PDF')->action(function ($livewire) {
@@ -100,6 +103,7 @@ class ExclusiveDptReport extends Page implements HasTable, HasInfolists
                     $pdf = new ExclusiveReport();
                     $pdf->setupTableHeaders($this->table->getColumns());
                     $pdf->coloredTable($this->getFilteredTableQuery()->with('visits')->get(), file_path: $file_path);
+
                     return response()->download($file_path)->deleteFileAfterSend();
                 }),
                 Action::make('all_to_excel')->label('تصدير الكل EXCEL')->action(function ($livewire) {
@@ -135,7 +139,7 @@ class ExclusiveDptReport extends Page implements HasTable, HasInfolists
                 TextEntry::make('total_visits_count')
                     ->label('عددالزيارات الكلية')
                     ->inlineLabel()
-                    ->weight('bold')
+                    ->weight('bold'),
             ]);
     }
 }

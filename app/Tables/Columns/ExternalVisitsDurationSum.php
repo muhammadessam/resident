@@ -19,6 +19,6 @@ class ExternalVisitsDurationSum extends Column
         return $data['total_duration'] ? CarbonInterval::hours($data['total_duration'])->cascade()->forHumans([
             'parts' => 4,
             'join' => ' و '
-        ]) : '';
+        ]) : '0';
     }
 }
