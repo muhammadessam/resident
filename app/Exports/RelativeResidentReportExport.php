@@ -2,8 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\Resident;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithEvents;
@@ -14,17 +13,20 @@ use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-    class ExclusiveReportExport implements FromCollection, WithMapping, WithHeadings, WithStyles, ShouldAutoSize, WithEvents
+class RelativeResidentReportExport implements FromCollection, WithMapping, WithHeadings, WithStyles, ShouldAutoSize, WithEvents
 {
 
     public Collection $data;
 
-    public function __construct($data)
+    public function __construct(Collection $data)
     {
         $this->data = $data;
     }
 
-    public function collection(): Collection|\Illuminate\Support\Collection
+    /**
+     * @return Collection
+     */
+    public function collection(): Collection
     {
         return $this->data;
     }
@@ -32,16 +34,17 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
     public function map($row): array
     {
         return [
-            $row->name,
-            $row->internal_visits_count ?: '0',
-            $row->external_visits_count ?: '0',
-            $row->visits()->latest()->first()->date_time ?? '',
+            $row->resident->name ?? '',
+            $row->relative->name ?? '',
+            $row->relative->phone1 ?? '',
+            $row->relative->phone2 ?? '',
+            $row->relative->phone3 ?? '',
         ];
     }
 
     public function headings(): array
     {
-        return ['اسم المقييم', 'عدد الزيارات الداخلية', 'عدد الزيارات الخارجية', 'تاريخ اخر الزيارة'];
+        return ['اسم المقييم', 'اسم القريب', 'رقم الجوال 1', 'رقم الجوال 2', 'رقم الجوال 3'];
     }
 
     public function styles(Worksheet $sheet): array

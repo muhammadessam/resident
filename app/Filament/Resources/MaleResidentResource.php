@@ -8,6 +8,7 @@ use App\Filament\Resources\MaleResidentResource\RelationManagers\ResidentialRela
 use App\Filament\Resources\MaleResidentResource\RelationManagers\VisitsRelationManager;
 use App\Filament\Resources\MaleResidentResource\Widgets\ResidentVisitsChart;
 use App\Models\Resident;
+use Exception;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
@@ -77,7 +78,7 @@ class MaleResidentResource extends Resource
 
             Textarea::make('notes')->label('ملاحظات'),
 
-            Select::make('healthProblems')->label('المشاكل الصحية')->multiple()->preload(true)->relationship('healthProblems', 'name'),
+            Select::make('healthProblems')->label('المشاكل الصحية')->multiple()->preload()->relationship('healthProblems', 'name'),
 
             Checkbox::make('ability_to_external_visit')->label('القدرية علي الزيارة الخارجية'),
 
@@ -94,7 +95,7 @@ class MaleResidentResource extends Resource
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public static function table(Table $table): Table
     {
@@ -118,15 +119,12 @@ class MaleResidentResource extends Resource
         ])->actions(ActionGroup::make([
             Action::make('move')
                 ->action(action: fn(Resident $record) => $record->update(['type' => 'female']))
-                ->icon('heroicon-o-user-minus')->requiresConfirmation(true)
+                ->icon('heroicon-o-user-minus')->requiresConfirmation()
                 ->label('نقل'),
             ViewAction::make(),
             Action::make('visits_report')->label('عرض تقرير الزيارات')
                 ->icon('heroicon-m-document-chart-bar')
                 ->url(fn($record) => MaleResidentResource::getUrl('visit_report', ['record' => $record])),
-            Action::make('relative_report')->label('عرض تقرير الاقارب')
-                ->icon('heroicon-s-document-text')
-                ->url(fn(Resident $record) => $record->name),
             EditAction::make(),
             RestoreAction::make(),
             DeleteAction::make()->form([
@@ -166,7 +164,6 @@ class MaleResidentResource extends Resource
             'view' => Pages\ViewMaleResident::route('/{record}'),
             'edit' => Pages\EditMaleResident::route('/{record}/edit'),
             'visit_report' => Pages\ResidentVisitsReport::route('{record}/visits-report'),
-            'relative_report' => Pages\ResidentRelativesReport::route('{record}/relatives-report'),
         ];
     }
 

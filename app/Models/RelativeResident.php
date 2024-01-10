@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class RelativeResident extends Pivot
@@ -27,5 +28,14 @@ class RelativeResident extends Pivot
     protected $primaryKey = 'id';
     protected $fillable = ['id', 'resident_id', 'relative_id', 'relation', 'is_guardian', 'updated_at', 'created_at'];
 
+    public function resident(): BelongsTo
+    {
+        return $this->belongsTo(Resident::class, 'resident_id');
+    }
+
+    public function relative(): BelongsTo
+    {
+        return $this->belongsTo(Relative::class, 'relative_id');
+    }
 
 }
