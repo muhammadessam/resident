@@ -25,6 +25,7 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Filters\TrashedFilter;
@@ -116,6 +117,7 @@ class MaleResidentResource extends Resource
 
             TextColumn::make('lastVisit.date_time')->sortable()->label('تاريخ اخر زيارة')->date('Y-m-d'),
 
+            ToggleColumn::make('is_out_to_hospital')->label('المقيم في المشفي')->sortable(),
         ])->actions(ActionGroup::make([
             Action::make('move')
                 ->action(action: fn(Resident $record) => $record->update(['type' => 'female']))

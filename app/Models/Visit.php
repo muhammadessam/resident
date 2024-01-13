@@ -66,6 +66,7 @@ class Visit extends Model
 
     protected $casts = [
         'date_time' => 'datetime',
+        'end_date' => 'datetime',
     ];
 
     public function resident(): BelongsTo
@@ -86,5 +87,10 @@ class Visit extends Model
     public function scopeInternal(Builder $builder): void
     {
         $builder->where('type', 'internal');
+    }
+
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

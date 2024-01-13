@@ -25,6 +25,7 @@ class AdminPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
+            ->authGuard('web')
             ->default()
             ->id('admin')
             ->path('admin')
@@ -59,8 +60,6 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-            ])->plugins([
-                FilamentShieldPlugin::make(),
             ])->authMiddleware([
                 Authenticate::class,
             ])->viteTheme('resources/css/filament/admin/theme.css');

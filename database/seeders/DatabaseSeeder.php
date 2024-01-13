@@ -21,5 +21,7 @@ class DatabaseSeeder extends Seeder
         Relative::factory(100)->create();
         RelativeResident::factory(200)->create();
         Visit::factory(100)->create();
+        $this->call(SuperAdminSeeder::class);
+
     }
 }

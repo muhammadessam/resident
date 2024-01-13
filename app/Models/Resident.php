@@ -92,6 +92,7 @@ class Resident extends Model implements HasMedia
         'notes',
         'mental_disability_degree',
         'city_id',
+        'is_out_to_hospital',
         'deletion_reason',
         'created_at',
         'updated_at',

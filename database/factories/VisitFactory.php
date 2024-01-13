@@ -17,14 +17,19 @@ class VisitFactory extends Factory
         $type = $this->faker->randomKey(Visit::TYPE);
         $resident = Resident::whereHas('relatives')->inRandomOrder()->first();
         $relatives_id = $resident->relatives->pluck('id')->toArray();
+        $start_date_time = Carbon::now()->subDays($this->faker->randomNumber(2));
+
+        $duration = ($type == 'internal') ? 1 : $this->faker->numberBetween(1, 8);
+        $duration_type = ($type == 'internal') ? 'hours' : 'days';
         return [
             'type' => $type,
-            'duration_type' => $type == 'internal' ? 'hours' : $this->faker->randomKey(Visit::DURATION_TYPE),
-            'duration' => $type == 'internal' ? 1 : $this->faker->numberBetween(1, 8),
+            'duration_type' => $duration_type,
+            'duration' => $duration,
             'companion_no' => $this->faker->numberBetween(0, 9),
-            'date_time' => $this->faker->dateTime(),
+            'date_time' => $start_date_time,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
+            'end_date' => $start_date_time->add(unit: $duration_type, value: $duration),
 
             'resident_id' => $resident->id,
             'relative_id' => $this->faker->randomElement($relatives_id),
