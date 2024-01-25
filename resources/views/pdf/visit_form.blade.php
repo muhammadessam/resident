@@ -168,14 +168,14 @@
     <tr>
         <td class="tg-eqm3 bg-gray">تاريخ اخر زيارة</td>
         <td class="tg-eqm3">{{$ar->arNormalizeText(($last_visit? :$visit)->date_time->format('Y/m/d'), 'Hindu')}}</td>
-        <td class="tg-eqm3 bg-gray">مدي تواصل الاسرة</td>
+        <td class="tg-eqm3 bg-gray">مدى تواصل الأسرة</td>
         <td class="tg-eqm3"></td>
     </tr>
     <tr>
         <td class="tg-eqm3 bg-gray">عدد ايام الزيارة</td>
         <td class="tg-eqm3">{{$visit->type=='external' ?  $ar->arNormalizeText($visit->duration . ' ' . \App\Models\Visit::DURATION_TYPE[$visit->duration_type], 'Hindu'):''}}</td>
         <td class="tg-eqm3 bg-gray">رقم التواصل</td>
-        <td class="tg-eqm3">{{$ar->arNormalizeText($visit->relative->phon1, 'Hindu')}}</td>
+        <td class="tg-eqm3">{{$visit->relative->phone1}}</td>
     </tr>
     <tr>
         <td class="tg-eqm3 bg-gray" colspan="2">مدي الاندماج بين المستفيد والاسرة</td>
@@ -195,7 +195,7 @@
         </td>
     </tr>
     <tr>
-        <td class="tg-eqm3" colspan="2">عرض وتدريب علي خطة العمل العلاجية</td>
+        <td class="tg-eqm3 bg-gray" colspan="2">عرض وتدريب علي خطة العمل العلاجية</td>
         <td class="tg-eqm3" colspan="2">
             <svg width="10" height="10">
                 <rect width="10" height="10" stroke="black" stroke-width="1" fill="white"/>
@@ -208,7 +208,7 @@
         </td>
     </tr>
     <tr>
-        <td class="tg-eqm3" colspan="2">الهدف من الزيارة</td>
+        <td class="tg-eqm3 bg-gray" colspan="2">الهدف من الزيارة</td>
         <td class="tg-eqm3" colspan="2">
             <svg width="10" height="10">
                 <rect width="10" height="10" stroke="black" stroke-width="1" fill="white"/>
@@ -227,7 +227,7 @@
         </td>
     </tr>
     <tr>
-        <td class="tg-eqm3" colspan="2" style="text-align: right;padding-right: 5mm">الاجراءات المتخذة قبل الخروج للزيارات الخارجية</td>
+        <td class="tg-eqm3 bg-gray" colspan="2" style="text-align: right;padding-right: 5mm">الاجراءات المتخذة قبل الخروج للزيارات الخارجية</td>
         <td class="tg-eqm3" style="text-align: right; padding-right: 5mm" colspan="2">
             <div>
                 <svg width="10" height="10">
@@ -247,6 +247,12 @@
                     <rect width="10" height="10" stroke="black" stroke-width="1" fill="white"/>
                 </svg>
                 <span>تسليم الادوية</span>
+            </div>
+            <div>
+                <svg width="10" height="10">
+                    <rect width="10" height="10" stroke="black" stroke-width="1" fill="white"/>
+                </svg>
+                <span>تسليم كسوة كافية</span>
             </div>
             <div>
                 <svg width="10" height="10">
@@ -312,11 +318,11 @@
         <td class="tg-eqm3">&nbsp;</td>
     </tr>
     <tr>
-        <td class="tg-eqm3">{{$visit->relative->name}}</td>
+        <td class="tg-eqm3">اسم القائم بالزيارة</td>
         <td class="tg-eqm3">التوقيع</td>
     </tr>
     <tr>
-        <td class="tg-eqm3">&nbsp;</td>
+        <td class="tg-eqm3">&nbsp;{{$visit->relative->name}}</td>
         <td class="tg-eqm3">&nbsp;</td>
     </tr>
 </table>
