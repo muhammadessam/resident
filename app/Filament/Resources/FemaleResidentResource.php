@@ -3,10 +3,10 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\FemaleResidentResource\Pages;
-use App\Filament\Resources\MaleResidentResource\RelationManagers\RelativesRelationManager;
-use App\Filament\Resources\MaleResidentResource\RelationManagers\ResidentialRelativesRelationManager;
-use App\Filament\Resources\MaleResidentResource\RelationManagers\VisitsRelationManager;
-use App\Filament\Resources\MaleResidentResource\Widgets\ResidentVisitsChart;
+use App\Filament\Resources\FemaleResidentResource\RelationManagers\RelativesRelationManager;
+use App\Filament\Resources\FemaleResidentResource\RelationManagers\ResidentialRelativesRelationManager;
+use App\Filament\Resources\FemaleResidentResource\RelationManagers\VisitsRelationManager;
+use App\Filament\Resources\FemaleResidentResource\Widgets\ResidentVisitsChart;
 use App\Models\Resident;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
@@ -18,11 +18,13 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Filters\TrashedFilter;
@@ -53,7 +55,6 @@ class FemaleResidentResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-
             TextInput::make('name')->label('الاسم')->required(),
 
             TextInput::make('number')->label('رقم المستفيد')->required()->unique('residents', 'number', ignoreRecord: true),
@@ -66,7 +67,7 @@ class FemaleResidentResource extends Resource
 
             Select::make('city_id')->label('المدينة')->relationship('city', 'name')->preload()->searchable()->required(),
 
-            Select::make('mental_disability_degree')->label('درجة الاعاقة')->options(Resident::METAL_DEGREE)->required(),
+            Select::make('mental_disability_degree')->label('مستوي الاعاقة')->options(Resident::METAL_DEGREE)->required(),
 
             Textarea::make('external_visit_authorized')->label('المصرح لهم بالزياة الخارجية'),
 
@@ -74,7 +75,7 @@ class FemaleResidentResource extends Resource
 
             Textarea::make('notes')->label('ملاحظات'),
 
-            Select::make('healthProblems')->label('المشاكل الصحية')->multiple()->preload(true)->relationship('healthProblems', 'name'),
+            Select::make('healthProblems')->label('المشاكل الصحية')->multiple()->preload()->relationship('healthProblems', 'name'),
 
             Checkbox::make('ability_to_external_visit')->label('القدرية علي الزيارة الخارجية'),
 
@@ -104,20 +105,28 @@ class FemaleResidentResource extends Resource
 
             TextColumn::make('age')->label('العمر')->sortable(['dob'])->formatStateUsing(fn($state) => $state . ' سنة '),
 
-            TextColumn::make('building')->label('المبني'),
+            TextColumn::make('building')->label('المبني')->sortable(),
 
-            TextColumn::make('internal_visits_count')->label('عدد الزيارات الداخلية')->counts('internalVisits'),
+            TextColumn::make('internal_visits_count')->label('عدد الزيارات الداخلية')->counts('internalVisits')->sortable(),
 
-            TextColumn::make('external_visits_count')->label('عدد الزيارات الخارجية')->counts('externalVisits'),
+            TextColumn::make('external_visits_count')->label('عدد الزيارات الخارجية')->counts('externalVisits')->sortable(),
 
-            TextColumn::make('lastVisit.date_time')->label('تاريخ اخر زيارة')->date('Y-m-d'),
+            TextColumn::make('lastVisit.date_time')->sortable()->label('تاريخ اخر زيارة')->date('Y-m-d'),
 
-        ])->actions([
+        ])->actions(ActionGroup::make([
+            Action::make('out_to_hospital')
+                ->label(' اخراج المقييم الي المشفي')
+                ->action(fn(Resident $record) => $record->update(['is_out_to_hospital' => now()->toDate()]))
+                ->icon('heroicon-o-user-minus')
+                ->requiresConfirmation(true)->hidden(fn($record) => $record->is_out_to_hospital != null),
             Action::make('move')
                 ->action(action: fn(Resident $record) => $record->update(['type' => 'male']))
-                ->icon('heroicon-o-user-minus')->requiresConfirmation(true)
+                ->icon('heroicon-o-user-minus')->requiresConfirmation()
                 ->label('نقل'),
             ViewAction::make(),
+            Action::make('visits_report')->label('عرض تقرير الزيارات')
+                ->icon('heroicon-m-document-chart-bar')
+                ->url(fn($record) => FemaleResidentResource::getUrl('visit_report', ['record' => $record])),
             EditAction::make(),
             RestoreAction::make(),
             DeleteAction::make()->form([
@@ -127,7 +136,7 @@ class FemaleResidentResource extends Resource
                 $record->update($data);
                 $record->delete();
             }),
-        ])->filters([
+        ]))->filters([
             TrashedFilter::make(),
 
             TernaryFilter::make('ability_to_external_visit')->label('القدرة علي الزيارة الخارجية'),
@@ -144,7 +153,7 @@ class FemaleResidentResource extends Resource
 
             SelectFilter::make('city')->relationship('city', 'name')->multiple(),
 
-            SelectFilter::make('building')->label('المبني')->options(Resident::MALE_BUILDINGS),
+            SelectFilter::make('building')->label('المبني')->options(Resident::FEMALE_BUILDINGS),
 
         ])->filtersFormColumns(2)->striped();
     }
@@ -156,6 +165,7 @@ class FemaleResidentResource extends Resource
             'create' => Pages\CreateFemaleResident::route('/create'),
             'view' => Pages\ViewFemaleResident::route('/{record}'),
             'edit' => Pages\EditFemaleResident::route('/{record}/edit'),
+            'visit_report' => Pages\ResidentVisitsReport::route('{record}/visits-report'),
         ];
     }
 

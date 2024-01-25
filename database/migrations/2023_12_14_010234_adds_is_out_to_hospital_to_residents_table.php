@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::table('residents', function (Blueprint $table) {
             if (!Schema::hasColumn('residents', 'is_out_to_hospital')) {
-                $table->boolean('is_out_to_hospital')->default(false);
+                $table->date('is_out_to_hospital')->nullable()->default(null);
             }
         });
     }

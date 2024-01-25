@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\FemaleResidentResource\Pages;
 
 use App\Filament\Resources\FemaleResidentResource;
-use App\Filament\Resources\MaleResidentResource\Widgets\ResidentVisitsChart;
+use App\Filament\Resources\FemaleResidentResource\Widgets\ResidentVisitsChart;
 use App\Models\Resident;
 use Carbon\Carbon;
 use Filament\Actions;

@@ -3,10 +3,9 @@
         {{now()->format('H:i  Y-m-d')}}
     </div>
 
-
-
-
-
+    <livewire:male-resident-in-dept-widget type="male"/>
+    <livewire:external-visits-resident-widget type="male"/>
+    <livewire:is-out-for-hospital-widget type="male"/>
 
     <style>
         .fi-sidebar {

@@ -3,10 +3,10 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\MaleResidentResource\Pages;
-use App\Filament\Resources\MaleResidentResource\RelationManagers\RelativesRelationManager;
-use App\Filament\Resources\MaleResidentResource\RelationManagers\ResidentialRelativesRelationManager;
-use App\Filament\Resources\MaleResidentResource\RelationManagers\VisitsRelationManager;
-use App\Filament\Resources\MaleResidentResource\Widgets\ResidentVisitsChart;
+use App\Filament\Resources\FemaleResidentResource\RelationManagers\RelativesRelationManager;
+use App\Filament\Resources\FemaleResidentResource\RelationManagers\ResidentialRelativesRelationManager;
+use App\Filament\Resources\FemaleResidentResource\RelationManagers\VisitsRelationManager;
+use App\Filament\Resources\FemaleResidentResource\Widgets\ResidentVisitsChart;
 use App\Models\Resident;
 use Exception;
 use Filament\Forms\Components\Checkbox;
@@ -117,8 +117,12 @@ class MaleResidentResource extends Resource
 
             TextColumn::make('lastVisit.date_time')->sortable()->label('تاريخ اخر زيارة')->date('Y-m-d'),
 
-            ToggleColumn::make('is_out_to_hospital')->label('المقيم في المشفي')->sortable(),
         ])->actions(ActionGroup::make([
+            Action::make('out_to_hospital')
+                ->label(' اخراج المقييم الي المشفي')
+                ->action(fn(Resident $record) => $record->update(['is_out_to_hospital' => now()->toDate()]))
+                ->icon('heroicon-o-user-minus')
+                ->requiresConfirmation(true),
             Action::make('move')
                 ->action(action: fn(Resident $record) => $record->update(['type' => 'female']))
                 ->icon('heroicon-o-user-minus')->requiresConfirmation()

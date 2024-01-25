@@ -15,4 +15,5 @@ class MaleNotificationPage extends Page
     protected static ?int $navigationSort = 1;
     protected static ?string $navigationGroup = 'شاشة الاشعارات';
 
+
 }

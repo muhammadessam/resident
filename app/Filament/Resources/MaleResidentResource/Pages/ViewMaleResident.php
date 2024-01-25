@@ -18,7 +18,7 @@ class ViewMaleResident extends ViewRecord
 
     protected function getFooterWidgets(): array
     {
-        return [MaleResidentResource\Widgets\ResidentVisitsChart::class];
+        return [\App\Filament\Resources\FemaleResidentResource\Widgets\ResidentVisitsChart::class];
     }
 
     public function infolist(Infolist $infolist): Infolist

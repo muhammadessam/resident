@@ -11,6 +11,7 @@ class FemaleNotificationPage extends Page
     protected static string $view = 'filament.pages.female-notification-page';
 
     protected static ?string $title = 'شاشة اشعارات الاناث';
+    protected static ?int $navigationSort = 2;
     protected static ?string $navigationGroup = 'شاشة الاشعارات';
 
 

@@ -4,11 +4,9 @@ namespace App\Filament\Pages;
 
 use App\Models\Visit;
 use Carbon\CarbonInterval;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Get;
 use Filament\Pages\Page;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
@@ -23,9 +21,10 @@ class ResidentOutAndIn extends Page implements HasTable
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
     protected static string $view = 'filament.pages.resident-out-and-in';
-    protected static ?string $title = 'اخراج وعودة المقيم';
-    protected static ?string $navigationLabel = 'اخراج وعودة المقييم';
+    protected static ?string $title = 'اخراج وعودة المقيم الزيارات الخارجية';
+    protected static ?string $navigationLabel = 'اخراج وعودة المقيم الزيارات الخارجية';
     protected static ?int $navigationSort = 4;
+    protected static ?string $navigationGroup = 'اخراج وعودة المقيم';
 
     public function table(Table $table): Table
     {
@@ -81,4 +80,6 @@ class ResidentOutAndIn extends Page implements HasTable
                     ->color('danger')
             ]);
     }
+
+
 }

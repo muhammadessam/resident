@@ -32,8 +32,9 @@ class AdminPanelProvider extends PanelProvider
             ->login(Login::class)
             ->font('cairo')
             ->navigationGroups([
+                NavigationGroup::make('اخراج وعودة المقيم الزيارات الخارجية'),
+                NavigationGroup::make('شاشة الاشعارات'),
                 NavigationGroup::make('التقارير'),
-                NavigationGroup::make('الاعدادت'),
             ])
             ->colors([
                 'danger' => Color::Rose,
