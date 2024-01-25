@@ -172,4 +172,11 @@ class Resident extends Model implements HasMedia
     {
         return $this->hasOne(Visit::class, 'resident_id')->latestOfMany('date_time');
     }
+
+    public function activeExternalVisit(): HasOne
+    {
+        return $this->hasOne(Visit::class, 'resident_id')
+            ->where('type', 'external')
+            ->where('end_date', '>=', now()->toDate());
+    }
 }

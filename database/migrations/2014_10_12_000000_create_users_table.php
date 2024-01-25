@@ -15,7 +15,7 @@ return new class extends Migration {
 
             $table->string('name');
             $table->string('user_name')->nullable()->default(null);
-            $table->enum('default_screen', ['male', 'female'])->nullable()->default(null);
+            $table->enum('default_screen', ['MALE_SCREEN', 'FEMALE_SCREEN'])->nullable()->default(null);
             $table->boolean('is_super_admin')->default(false);
             $table->json('permissions')->nullable()->default(null);
             $table->string('email')->unique()->nullable()->default(null);

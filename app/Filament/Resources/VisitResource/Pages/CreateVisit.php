@@ -79,4 +79,9 @@ class CreateVisit extends CreateRecord
             $this->halt();
         }
     }
+
+    protected function afterCreate(): void
+    {
+        activity()->causedBy(Filament::auth()->user())->withProperty('date', now()->format('Y-m-d: H:i:s'))->on($this->getRecord())->log('تم اضافة زيارة بواسطة: ');
+    }
 }

@@ -3,7 +3,7 @@
 @config 'tailwind.config.js';
 
 .fi-sidebar {
-    @apply bg-white !important;
+    @apply bg-white  !important;
 }
 ::-webkit-scrollbar {
     width: 5px !important;

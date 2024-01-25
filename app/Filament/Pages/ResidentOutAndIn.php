@@ -31,7 +31,7 @@ class ResidentOutAndIn extends Page implements HasTable
     {
         return $table
             ->emptyStateHeading('لا يوجد مقيميين في زيارات خارجية')
-            ->query(Visit::query()->whereDate('end_date', '>=', now()))
+            ->query(Visit::query()->where('type', 'external')->whereTime('end_date', '>=', now()))
             ->columns([
                 TextColumn::make('resident.name')->label('اسم المقييم'),
                 TextColumn::make('relative.name')->label('اسم القريب'),
@@ -42,7 +42,8 @@ class ResidentOutAndIn extends Page implements HasTable
             ])->actions([
                 Action::make('return_now')
                     ->label('عودة الان')
-                    ->action(function (Visit $record) {
+                    ->requiresConfirmation(true)
+                    ->action(function ($record) {
                         $record->update([
                             'end_date' => now()
                         ]);
