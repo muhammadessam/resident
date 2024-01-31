@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Enums\Permissions;
 use App\Exports\VisitsExportTemplate20;
 use App\Exports\VisitsExportTemplate21;
 use App\Models\Resident;
@@ -35,6 +36,10 @@ class VisitsReport21 extends Page implements HasTable, HasInfolists
 
     protected static ?string $title = 'تقرير الزيارات نموذج 21';
 
+    public static function canAccess(): bool
+    {
+        return in_array(Permissions::VIEW_REPORTS->name, filament()->auth()->user()->permissions ?? []) || filament()->auth()->user()->is_super_admin;
+    }
 
     public function table(Table $table): Table
     {

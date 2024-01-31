@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Enums\Permissions;
 use App\Exports\VisitsExportTemplate20;
 use App\Models\Visit;
 use Carbon\Carbon;
@@ -30,6 +31,10 @@ class VisitsReport extends Page implements HasTable
 
     protected static ?string $navigationGroup = 'التقارير';
 
+    public static function canAccess(): bool
+    {
+        return in_array(Permissions::VIEW_REPORTS->name, filament()->auth()->user()->permissions ?? [])|| filament()->auth()->user()->is_super_admin;
+    }
     protected function table(Table $table): Table
     {
         return $table->query(Visit::query())

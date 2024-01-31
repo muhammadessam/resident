@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Classes\Login;
+use App\Filament\Pages\BackUps;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -35,6 +36,7 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make('اخراج وعودة المقيم الزيارات الخارجية'),
                 NavigationGroup::make('شاشة الاشعارات'),
                 NavigationGroup::make('التقارير'),
+                NavigationGroup::make('الاعدادت')
             ])
             ->colors([
                 'danger' => Color::Rose,
@@ -54,7 +56,7 @@ class AdminPanelProvider extends PanelProvider
                 //Widgets\AccountWidget::class,
                 //Widgets\FilamentInfoWidget::class,
             ])->plugins([
-                FilamentSpatieLaravelBackupPlugin::make()
+                FilamentSpatieLaravelBackupPlugin::make()->usingPage(BackUps::class)
             ])
             ->sidebarCollapsibleOnDesktop(true)
             ->middleware([

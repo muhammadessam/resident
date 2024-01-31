@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Enums\Permissions;
 use App\Models\Resident;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -25,6 +26,10 @@ class ResidentOutForHospital extends Page implements HasTable, HasForms
 
     protected static ?string $navigationLabel = 'اخراج وعودة المقيمم من المستشفي';
 
+    public static function canAccess(): bool
+    {
+        return in_array(Permissions::RETURN_RESIDENT->name, filament()->auth()->user()->permissions ?? []) || filament()->auth()->user()->is_super_admin;
+    }
 
     public function table(Table $table): Table
     {

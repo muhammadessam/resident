@@ -28,10 +28,7 @@ class UserResource extends Resource
     protected static ?string $navigationLabel = 'المستخدمين';
     protected static ?int $navigationSort = 8;
 
-    public static function getNavigationGroup(): ?string
-    {
-        return __('filament-spatie-backup::backup.pages.backups.navigation.group');
-    }
+    protected static ?string $navigationGroup = 'الاعدادت';
 
     public static function form(Form $form): Form
     {

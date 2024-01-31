@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Enums\Permissions;
 use App\Models\RelativeResident;
 use App\Models\Resident;
 use Filament\Pages\Page;
@@ -24,6 +25,10 @@ class ResidentNoVisitReport extends Page implements HasTable
 
     protected static ?int $navigationSort = 6;
 
+    public static function canAccess(): bool
+    {
+        return in_array(Permissions::VIEW_REPORTS->name, filament()->auth()->user()->permissions ?? [])|| filament()->auth()->user()->is_super_admin;
+    }
     public function table(Table $table): Table
     {
         return $table

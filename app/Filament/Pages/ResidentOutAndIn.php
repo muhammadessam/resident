@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Enums\Permissions;
 use App\Models\Visit;
 use Carbon\CarbonInterval;
 use Filament\Forms\Components\DateTimePicker;
@@ -26,6 +27,10 @@ class ResidentOutAndIn extends Page implements HasTable
     protected static ?int $navigationSort = 4;
     protected static ?string $navigationGroup = 'اخراج وعودة المقيم';
 
+    public static function canAccess(): bool
+    {
+        return in_array(Permissions::EXTEND_VISIT->name, filament()->auth()->user()->permissions ?? [])|| filament()->auth()->user()->is_super_admin;
+    }
     public function table(Table $table): Table
     {
         return $table

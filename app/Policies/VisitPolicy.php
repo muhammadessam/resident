@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\Permissions;
 use App\Models\User;
 use App\Models\Visit;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -12,7 +13,7 @@ class VisitPolicy
 
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_visit');
+        return in_array(Permissions::ADD_VISIT->name, $user->permissions);
     }
 
     public function view(User $user, Visit $visit): bool
@@ -22,12 +23,12 @@ class VisitPolicy
 
     public function create(User $user): bool
     {
-        return $user->can('create_visit');
+        return in_array(Permissions::ADD_VISIT->name, $user->permissions);
     }
 
     public function update(User $user, Visit $visit): bool
     {
-        return $user->can('update_visit');
+        return in_array(Permissions::ADD_VISIT->name, $user->permissions);
     }
 
     public function delete(User $user, Visit $visit): bool

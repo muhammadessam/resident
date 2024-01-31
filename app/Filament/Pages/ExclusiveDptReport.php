@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Enums\Permissions;
 use App\Exports\ExclusiveReportExport;
 use App\Models\Resident;
 use App\TCPDFHelper\ExclusiveReport;
@@ -38,6 +39,11 @@ class ExclusiveDptReport extends Page implements HasInfolists, HasTable
     protected static ?string $title = 'تقرير شامل للقسم';
 
     protected static ?string $navigationLabel = 'تقرير شامل للقسم';
+
+    public static function canAccess(): bool
+    {
+        return in_array(Permissions::VIEW_REPORTS->name, filament()->auth()->user()->permissions ?? [])|| filament()->auth()->user()->is_super_admin;
+    }
 
     public function table(Table $table): Table
     {

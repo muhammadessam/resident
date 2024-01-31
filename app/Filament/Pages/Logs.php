@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Enums\Permissions;
 use Filament\Pages\Page;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
@@ -19,9 +20,11 @@ class Logs extends Page implements HasTable
     protected static string $view = 'filament.pages.logs';
     protected static ?string $title = 'السجل';
 
-    public static function getNavigationGroup(): ?string
+    protected static ?string $navigationGroup = 'الاعدادت';
+
+    public static function canAccess(): bool
     {
-        return __('filament-spatie-backup::backup.pages.backups.navigation.group');
+        return filament()->auth()->user()->is_super_admin;
     }
 
     public function table(Table $table): Table
