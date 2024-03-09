@@ -35,7 +35,7 @@ class ResidentOutAndIn extends Page implements HasTable
     {
         return $table
             ->emptyStateHeading('لا يوجد مقيميين في زيارات خارجية')
-            ->query(Visit::query()->where('type', 'external')->whereTime('end_date', '>=', now()))
+            ->query(Visit::query()->where('type', 'external')->where('end_date', '>=', now()))
             ->columns([
                 TextColumn::make('resident.name')->label('اسم المقييم'),
                 TextColumn::make('relative.name')->label('اسم القريب'),

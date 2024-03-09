@@ -23,6 +23,7 @@ use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
@@ -44,6 +45,7 @@ class VisitResource extends Resource
     protected static ?string $pluralLabel = 'الزيارات';
     protected static ?string $navigationIcon = 'heroicon-o-inbox-arrow-down';
     protected static ?int $navigationSort = 3;
+    protected static ?bool $isDisabled = false;
 
     public static function form(Form $form): Form
     {
@@ -55,6 +57,18 @@ class VisitResource extends Resource
                 ->searchable()
                 ->live()
                 ->afterStateUpdated(function ($state, $set) {
+                    $check_for_last_visit = Visit::where('resident_id', $state)
+                        ->where('type', 'external')
+                        ->whereDate('end_date', '>=', now());
+                    $get_resident = Resident::find($state);
+                    if ($check_for_last_visit?->count()) {
+                        Notification::make()->danger()->title('المقيم في زيارة خارجية ')->body('عفواً هذا المقيم حالياً في زيارة خارجية')->persistent()->send();
+                        self::$isDisabled = true;
+                    }
+                    if ($get_resident->is_out_to_hospital) {
+                        Notification::make()->danger()->title('المقيم في المستشفي ')->body('عفواً هذا المقيم حالياً في المستشفي')->persistent()->send();
+                        self::$isDisabled = true;
+                    }
                     $set('relative_id', null);
                 })->preload(),
 
@@ -66,6 +80,7 @@ class VisitResource extends Resource
                 })->live()
                 ->hidden(fn(Get $get) => !($get('resident_id') !== null))
                 ->preload()
+                ->disabled(fn() => self::$isDisabled)
                 ->searchable()
                 ->createOptionForm([
                     TextInput::make('name')->required()->label('الاسم'),
@@ -124,14 +139,17 @@ class VisitResource extends Resource
             Select::make('type')
                 ->label('نوع الزيارة')
                 ->required()
+                ->disabled(fn() => self::$isDisabled)
                 ->options(Visit::TYPE)->live(),
 
             DateTimePicker::make('date_time')
+                ->disabled(fn() => self::$isDisabled)
                 ->label('تاريخ ووقت الزيارة')
                 ->default(now()),
 
             TextInput::make('duration')
                 ->label('المدة')
+                ->disabled(fn() => self::$isDisabled)
                 ->required()
                 ->integer()
                 ->step(1)
@@ -143,6 +161,7 @@ class VisitResource extends Resource
             Select::make('duration_type')
                 ->label('المدة بالايام ام الساعات')
                 ->required()
+                ->disabled(fn() => self::$isDisabled)
                 ->options([
                     'days' => 'يوم',
                     'hours' => 'ساعة',
@@ -152,6 +171,7 @@ class VisitResource extends Resource
             TextInput::make('companion_no')
                 ->label('عدد المرافقين')
                 ->numeric()
+                ->disabled(fn() => self::$isDisabled)
                 ->maxValue(9)
                 ->minValue(1)
                 ->default(1)
@@ -165,11 +185,10 @@ class VisitResource extends Resource
                         Placeholder::make('building')->label('المبني:')->inlineLabel()->content(fn(Get $get) => Resident::find($get('resident_id'))->building),
                         Placeholder::make('external_visit_authorized')
                             ->label('المصرح لهم بالزيارة الخارجية:')
-                            ->content(fn(Get $get) => Resident::find($get('resident_id'))->external_visit_authorized)
-                            ->inlineLabel(),
+                            ->content(fn(Get $get) => Resident::find($get('resident_id'))->external_visit_authorized),
                         Placeholder::make('internal_visit_authorized')
                             ->label('المصرح لهم بالزيارة الداخلية:')
-                            ->inlineLabel()->content(fn(Get $get) => Resident::find($get('resident_id'))->internal_visit_authorized),
+                            ->content(fn(Get $get) => Resident::find($get('resident_id'))->internal_visit_authorized),
 
                         Placeholder::make('notes')
                             ->label('ملاحظات')
